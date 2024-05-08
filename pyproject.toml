@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "papyrus"
+authors = [
+    {name = "Samuel Tovey", email = "stovey@icp.uni-stuttgart.de"},
+    {name = "Konstantin Nikolaou", email = "knikolaou@icp.uni-stuttgart.de"},
+]
+description = "Like our ancestors started capturing their thoughts on papyrus, with this package you can capture the inner workings of artificial neural networks."
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["neural networks", "artificial intelligence"]
+license = {text = "BSD-3-Clause"}
+dependencies = [
+    "numpy",
+]
+version = "0.0.1"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
