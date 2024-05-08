@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 61.0"]
+requires = ["setuptools >= 61.0", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -13,9 +13,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 keywords = ["neural networks", "artificial intelligence"]
 license = {text = "BSD-3-Clause"}
-dependencies = [
-    "numpy",
-]
+
 version = "0.0.1"
 
 [tool.black]
