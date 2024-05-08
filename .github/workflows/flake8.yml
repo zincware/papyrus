@@ -3,23 +3,18 @@ name: flake8 Lint
 on: [push]
 
 jobs:
-    run-linters:
-      name: Run Flake8
-      runs-on: ubuntu-latest
-  
-      steps:
-        - name: Check out Git repository
-          uses: actions/checkout@v3
-  
-        - name: Set up Python
-          uses: actions/setup-python@v1
-          with:
-            python-version: 3.11
-  
-        - name: Install Python dependencies
-          run: pip install flake8
-  
-        - name: Run linters
-          uses: wearerequired/lint-action@v2
-          with:
-            flake8: true
+  flake8-lint:
+    runs-on: ubuntu-latest
+    name: Lint
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: flake8 Lint
+        uses: py-actions/flake8@v2
+        with:
+            max-line-length: "100"
+            ignore: "W291"
