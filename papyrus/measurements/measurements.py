@@ -22,8 +22,10 @@ Summary
 Module containing default measurements for recording neural learning.
 """
 
+from typing import Callable, Optional
+
 import numpy as np
-from typing import Optional, Callable
+
 from papyrus.measurements.base_measurement import BaseMeasurement
 from papyrus.utils.analysis_utils import (
     compute_shannon_entropy,
