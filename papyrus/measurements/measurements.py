@@ -22,7 +22,7 @@ Summary
 Module containing default measurements for recording neural learning.
 """
 
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 import numpy as np
 
