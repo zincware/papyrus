@@ -19,12 +19,10 @@ web: https://zincwarecode.com/
 
 Summary
 -------
-papyrus measurements api.
 """
 
-from papyrus import measurements, utils
+from papyrus.utils.matrix_utils import *
 
 __all__ = [
-    measurements.__name__,
-    utils.__name__,
+    matrix_utils.__name__,
 ]
