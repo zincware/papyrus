@@ -535,3 +535,65 @@ class NTKEigenvalues(BaseMeasurement):
             The eigenvalues of the NTK
         """
         return compute_hermitian_eigensystem(ntk, normalize=self.normalize)[0]
+
+
+class NTK(BaseMeasurement):
+    """
+    Measurement class to record the Neural Tangent Kernel (NTK).
+
+    Note
+    ----
+    This measurement is not applicable to varying number of inputs as its output size
+    depends on the number of inputs it is applied to.
+
+    Measurements that return arrays with sizes that depend on the number of inputs
+    **cannot** be applied on varying number of inputs. This is because the number of
+    dimensions of the input need to be same for all subsequent calls, otherwise an error
+    will be raised when storing the results in the database.
+
+    Neural State Keys
+    -----------------
+    ntk : np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
+    """
+
+    def __init__(
+        self,
+        name: str = "ntk",
+        rank: int = 2,
+        public: bool = False,
+    ):
+        """
+        Constructor method of the NTK class.
+
+        Parameters
+        ----------
+        name : str (default="ntk")
+                The name of the measurement, defining how the instance in the database
+                will be identified.
+        rank : int (default=2)
+                The rank of the measurement, defining the tensor order of the
+                measurement.
+        public : bool (default=False)
+                Boolean flag to indicate whether the measurement resutls will be
+                accessible via a public attribute of the recorder.
+        """
+        super().__init__(name, rank, public)
+
+    def apply(self, ntk: np.ndarray) -> np.ndarray:
+        """
+        Method to record the Neural Tangent Kernel (NTK).
+
+        Parameters need to be provided as keyword arguments.
+
+        Parameters
+        ----------
+        ntk : np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
+
+        Returns
+        -------
+        np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
+        """
+        return ntk
