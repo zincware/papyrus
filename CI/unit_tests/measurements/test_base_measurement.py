@@ -51,8 +51,6 @@ class TestBaseMeasurement:
         # Test the rank parameter
         with pytest.raises(ValueError):
             BaseMeasurement(name, -1, public)
-        with pytest.raises(ValueError):
-            BaseMeasurement(name, 0, public)
 
     def test_call(self):
         """
@@ -64,12 +62,12 @@ class TestBaseMeasurement:
         public = False
         measurement = BaseMeasurement(name, rank, public)
 
-        # Test the apply_fn method
+        # Test the apply method
         with pytest.raises(NotImplementedError):
-            measurement.apply_fn()
+            measurement.apply()
 
-        # Set an exmaple apply_fn method
-        def apply_fn(
+        # Set an exmaple apply method
+        def apply(
             a: np.ndarray, b: np.ndarray, c: Optional[np.ndarray] = None
         ) -> np.ndarray:
             if c is not None:
@@ -81,7 +79,7 @@ class TestBaseMeasurement:
         c = np.array([[9, 10], [11, 12]])
 
         # Test the call method with only arguments
-        measurement.apply_fn = apply_fn
+        measurement.apply = apply
         result = measurement(a, b)
         assert np.allclose(result, a + b)
         result = measurement(a, b, c)

@@ -31,6 +31,26 @@ class BaseMeasurement(ABC):
     Base class for all measurements.
 
     A measurement is a class that records an aspect of the learning process.
+
+    Note
+    ----
+    All measurements should inherit from this class and implement the apply method.
+
+    Measurements that return arrays with sizes that depend on the number of inputs
+    **cannot** be applied on varying number of inputs. This is because the number of
+    dimensions of the input need to be same for all subsequent calls, otherwise an error
+    will be raised when storing the results in the database.
+
+    Attributes
+    ----------
+    name : str
+            The name of the measurement, defining how the instance in the database will
+            be identified.
+    rank : int
+            The rank of the measurement, defining the tensor order of the measurement.
+    public : bool
+            Boolean flag to indicate whether the measurement resutls will be accessible
+            via a public attribute of the recorder.
     """
 
     def __init__(self, name: str, rank: int, public: bool = False):
@@ -38,23 +58,23 @@ class BaseMeasurement(ABC):
         Constructor method of the BaseMeasurement class.
 
         name : str
-            The name of the measurement, defining how the instance in the database will
-            be identified.
+                The name of the measurement, defining how the instance in the database
+                will be identified.
         rank : int
-            The rank of the measurement, defining the tensor order of the measurement.
+                The rank of the measurement, defining the tensor order of the
+                measurement.
         public : bool
-            Boolean flag to indicate whether the measurement will be accessible as a
-            public attribute of the recorder. If True, the measurement will be stored
-            in the temporary data dictionary of the recorder.
+                Boolean flag to indicate whether the measurement resutls will be
+                accessible via a public attribute of the recorder.
         """
         self.name = name
         self.rank = rank
         self.public = public
 
-        if not isinstance(self.rank, int) or self.rank < 1:
+        if not isinstance(self.rank, int) or self.rank < 0:
             raise ValueError("Rank must be a positive integer.")
 
-    def apply_fn(self, *args: np.ndarray, **kwargs: np.ndarray) -> np.ndarray:
+    def apply(self, *args: np.ndarray, **kwargs: np.ndarray) -> np.ndarray:
         """
         Method to perform a measurement.
 
@@ -67,9 +87,9 @@ class BaseMeasurement(ABC):
         Parameters
         ----------
         *args : np.ndarray
-            The arguments to the function.
+                The arguments to the function.
         **kwargs : np.ndarray
-            The keyword arguments to the function.
+                The keyword arguments to the function.
 
 
         Returns
@@ -95,7 +115,7 @@ class BaseMeasurement(ABC):
         Returns
         -------
         np.ndarray
-            The result of the measurement.
+                The result of the measurement.
         """
         # Get the number of arguments
         num_args = len(args)
@@ -107,5 +127,5 @@ class BaseMeasurement(ABC):
 
         # Perform the measurement on each set of inputs
         return np.array(
-            [self.apply_fn(*i[:num_args], **dict(zip(keys, i[num_args:]))) for i in z]
+            [self.apply(*i[:num_args], **dict(zip(keys, i[num_args:]))) for i in z]
         )
