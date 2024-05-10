@@ -23,6 +23,7 @@ Summary
 
 from abc import ABC
 from inspect import signature
+from typing import List
 
 import numpy as np
 
@@ -81,7 +82,7 @@ class BaseMeasurement(ABC):
             raise ValueError("Rank must be a positive integer.")
 
         # Get the neural state keys that the measurement takes as input
-        self.neural_state_keys = []
+        self.neural_state_keys: List[str] = []
         self.neural_state_keys.extend(signature(self.apply).parameters.keys())
 
     def apply(self, *args: np.ndarray, **kwargs: np.ndarray) -> np.ndarray:
