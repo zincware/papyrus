@@ -58,12 +58,12 @@ class TestMatrixUtils:
         # normalize = False
         vals, vects = compute_hermitian_eigensystem(M, normalize=False)
         assert_array_almost_equal(vals, [3, 2, 1])
-        assert_array_almost_equal(vects, np.array([v3, v2, v1]).T)
+        assert_array_almost_equal(vects, np.array([v3, -v2, -v1]).T)
 
         # normalize = True
         vals, vects = compute_hermitian_eigensystem(M, normalize=True)
         assert_array_almost_equal(vals, [3 / 6, 2 / 6, 1 / 6])
-        assert_array_almost_equal(vects, np.array([v3, v2, v1]).T)
+        assert_array_almost_equal(vects, np.array([v3, -v2, -v1]).T)
 
     # def test_normalizing_covariance_matrix(self):
     #     """
