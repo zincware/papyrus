@@ -149,7 +149,6 @@ def compute_l_pq_norm(matrix: np.ndarray, p: int = 2, q: int = 2):
     calculate_l_pq_norm: np.ndarray
             L_qp norm of the matrix.
     """
-    print(p, q)
     inner_sum = np.sum(np.power(np.abs(matrix), p), axis=-1)
     outer_sum = np.sum(np.power(inner_sum, q / p), axis=-1)
     return np.power(outer_sum, 1 / q)
@@ -234,23 +233,3 @@ def unflatten_rank_4_tensor(tensor: np.ndarray, new_shape: tuple) -> np.ndarray:
         )
     _tensor = tensor.reshape(new_shape[0], new_shape[2], new_shape[1], new_shape[3])
     return np.moveaxis(_tensor, [2, 1], [1, 2])
-
-
-# def calculate_trace(matrix: np.ndarray, normalize: bool = False) -> np.ndarray:
-#     """
-#     Calculate the trace of a matrix, including optional normalization.
-
-#     Parameters
-#     ----------
-#     matrix : np.ndarray
-#             Matrix to calculate the trace of.
-#     normalize : bool (default=True)
-#             If true, the trace is normalized by the size of the matrix.
-
-#     Returns
-#     -------
-#     trace : np.ndarray
-#             Trace of the matrix.
-#     """
-#     normalization_factor = np.shape(matrix)[0] if normalize else 1
-#     return np.trace(matrix) / normalization_factor

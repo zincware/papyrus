@@ -21,6 +21,11 @@ Summary
 -------
 """
 
+from papyrus.utils.analysis_utils import (
+    compute_shannon_entropy,
+    compute_trace,
+    compute_von_neumann_entropy,
+)
 from papyrus.utils.matrix_utils import (
     compute_grammian_diagonal_distribution,
     compute_hermitian_eigensystem,
@@ -37,4 +42,7 @@ __all__ = [
     compute_l_pq_norm.__name__,
     flatten_rank_4_tensor.__name__,
     unflatten_rank_4_tensor.__name__,
+    compute_trace.__name__,
+    compute_shannon_entropy.__name__,
+    compute_von_neumann_entropy.__name__,
 ]
