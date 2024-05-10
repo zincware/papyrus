@@ -68,119 +68,172 @@ def compute_hermitian_eigensystem(
     return eigenvalues[::-1], eigenvectors[:, ::-1]
 
 
-# def normalize_gram_matrix(gram_matrix: np.ndarray):
-#     """
-#     Method for normalizing a gram matrix.
+def normalize_gram_matrix(gram_matrix: np.ndarray):
+    """
+    Method for normalizing a gram matrix.
 
-#     The normalization is done by dividing each element of the gram matrix by the
-#     square root of the product of the corresponding diagonal elements. This is
-#     equivalent to normalizing the inputs of the gram matrix.
+    The normalization is done by dividing each element of the gram matrix by the
+    square root of the product of the corresponding diagonal elements. This is
+    equivalent to normalizing the inputs of the gram matrix.
 
-#     Parameters
-#     ----------
-#     gram_matrix : np.ndarray
-#             Gram matrix to normalize.
+    Parameters
+    ----------
+    gram_matrix : np.ndarray
+            Gram matrix to normalize.
 
-#     Returns
-#     -------
-#     normalized_gram_matrix : np.ndarray
-#             A normalized gram matrix, i.e, the matrix given if all of its inputs
-#             had been normalized.
-#     """
-#     order = np.shape(gram_matrix)[0]
+    Returns
+    -------
+    normalized_gram_matrix : np.ndarray
+            A normalized gram matrix, i.e, the matrix given if all of its inputs
+            had been normalized.
+    """
+    order = np.shape(gram_matrix)[0]
 
-#     diagonals = np.diagonal(gram_matrix)
+    diagonals = np.diagonal(gram_matrix)
 
-#     repeated_diagonals = np.repeat(diagonals[None, :], order, axis=0)
+    repeated_diagonals = np.repeat(diagonals[None, :], order, axis=0)
 
-#     normalizing_matrix = np.sqrt(repeated_diagonals * repeated_diagonals.T)
+    normalizing_matrix = np.sqrt(repeated_diagonals * repeated_diagonals.T)
 
-#     # Check for zeros in the normalizing matrix
-#     normalizing_matrix = np.where(
-#         normalizing_matrix == 0, 0, 1 / normalizing_matrix
-#     )  # Avoid division by zero
+    # Check for zeros in the normalizing matrix
+    normalizing_matrix = np.where(
+        normalizing_matrix == 0, 0, 1 / normalizing_matrix
+    )  # Avoid division by zero
 
-#     return gram_matrix * normalizing_matrix
-
-
-# def compute_magnitude_density(gram_matrix: np.ndarray) -> np.ndarray:
-#     """
-#     Compute the normalized magnitude density of each component of a gram matrix.
-
-#     Parameters
-#     ----------
-#     gram_matrix : np.ndarray
-#             Covariance matrix to calculate the magnitude distribution of.
-
-#     Returns
-#     -------
-#     magnitude_density: np.ndarray
-#             Magnitude density of the individual entries.
-#     """
-#     magnitudes = np.sqrt(np.diagonal(gram_matrix))
-#     density = magnitudes / magnitudes.sum()
-#     return density
+    return gram_matrix * normalizing_matrix
 
 
-# def compute_l_pq_norm(matrix: np.ndarray, p: int = 2, q: int = 2):
-#     """
-#     Compute the L_pq norm of a matrix.
+def compute_grammian_diagonal_distribution(gram_matrix: np.ndarray) -> np.ndarray:
+    """
+    Compute the normalized distribution of the diagonals of a gram matrix.
 
-#     The norm calculates (sum_j (sum_i abs(a_ij)^p)^(p/q) )^(1/q)
-#     For the defaults (p = 2, q = 2) the function calculates the Frobenius
-#     (or Hilbert-Schmidt) norm.
+    The distribution is computed by taking the square root of the diagonal elements
+    of the gram matrix and normalizing them by the sum.
+    This method is equivalent to the distribution of the magnitudes of the vectors
+    that were used to compute the gram matrix.
 
-#     Parameters
-#     ----------
-#     matrix: np.ndarray
-#             Matrix to calculate the L_pq norm of
-#     p: int (default=2)
-#             Inner power of the norm.
-#     q: int (default=2)
-#             Outer power of the norm.
+    Parameters
+    ----------
+    gram_matrix : np.ndarray
+            Gram matrix to compute the diagonal distribution of.
 
-#     Returns
-#     -------
-#     calculate_l_pq_norm: np.ndarray
-#             L_qp norm of the matrix.
-#     """
-#     inner_sum = np.sum(np.power(matrix, q), axis=-1)
-#     outer_sum = np.sum(np.power(inner_sum, q / p), axis=-1)
-#     return np.power(outer_sum, 1 / q)
+    Returns
+    -------
+    magnitude_density: np.ndarray
+            Magnitude density of the individual entries.
+    """
+    magnitudes = np.sqrt(np.diagonal(gram_matrix))
+    distribution = magnitudes / magnitudes.sum()
+    return distribution
 
 
-# def flatten_rank_4_tensor(tensor: np.ndarray) -> np.ndarray:
-#     """
-#     Flatten a rank 4 tensor to a rank 2 tensor using a specific reshaping.
+def compute_l_pq_norm(matrix: np.ndarray, p: int = 2, q: int = 2):
+    """
+    Compute the L_pq norm of a matrix.
 
-#     The tensor is assumed to be of shape (n, n, m, m). The reshaping is done by
-#     concatenating first with the third and then with the fourth dimension, resulting
-#     in a tensor of shape (n * m, n * m).
+    The norm calculates (sum_j (sum_i abs(a_ij)^p)^(p/q) )^(1/q)
+    For the defaults (p = 2, q = 2) the function calculates the Frobenius
+    (or Hilbert-Schmidt) norm.
 
-#     Parameters
-#     ----------
-#     tensor : np.ndarray (shape=(n, n, m, m))
-#             Tensor to flatten.
+    Parameters
+    ----------
+    matrix: np.ndarray
+            Matrix to calculate the L_pq norm of
+    p: int (default=2)
+            Inner power of the norm.
+    q: int (default=2)
+            Outer power of the norm.
 
-#     Returns
-#     -------
-#     flattened_tensor : np.ndarray (shape=(n * m, n * m))
-#             Flattened tensor.
-#     """
+    Returns
+    -------
+    calculate_l_pq_norm: np.ndarray
+            L_qp norm of the matrix.
+    """
+    print(p, q)
+    inner_sum = np.sum(np.power(np.abs(matrix), p), axis=-1)
+    outer_sum = np.sum(np.power(inner_sum, q / p), axis=-1)
+    return np.power(outer_sum, 1 / q)
 
-#     try:
-#         assert tensor.shape[0] == tensor.shape[1]
-#     except AssertionError:
-#         raise ValueError("The first two dimensions of the tensor must be equal.")
-#     try:
-#         assert tensor.shape[2] == tensor.shape[3]
-#     except AssertionError:
-#         raise ValueError("The third and fourth dimensions of the tensor must be equal.")
 
-#     _tensor = np.moveaxis(tensor, [1, 2], [2, 1])
-#     return _tensor.reshape(
-#         _tensor.shape[0] * _tensor.shape[1], _tensor.shape[0] * _tensor.shape[1]
-#     )
+def flatten_rank_4_tensor(tensor: np.ndarray) -> np.ndarray:
+    """
+    Flatten a rank 4 tensor to a rank 2 tensor using a specific reshaping.
+
+    With this function a tensor of shape (k, l, m, n) is reshaped to a tensor of shape
+    (k * m, l * n). The reshaping is done by concatenating axes 1 and 2, and
+    then 3 and 4.
+
+    Parameters
+    ----------
+    tensor : np.ndarray (shape=(k, l, m, n))
+            Tensor to flatten.
+
+    Returns
+    -------
+    A 2-tuple of the following form:
+
+    flattened_tensor : np.ndarray (shape=(k * m, l * n))
+            Flattened tensor.
+    shape : tuple
+            Shape of the original tensor.
+    """
+    # Check if the tensor is of rank 4
+    if len(tensor.shape) != 4:
+        raise ValueError(
+            "The tensor is not of rank 4. "
+            f"Expected rank 4 but got {len(tensor.shape)}."
+        )
+    shape = tensor.shape
+    _tensor = np.moveaxis(tensor, [1, 2], [2, 1])
+    flattened_tensor = _tensor.reshape(shape[0] * shape[2], shape[1] * shape[3])
+    return flattened_tensor, shape
+
+
+def unflatten_rank_4_tensor(tensor: np.ndarray, new_shape: tuple) -> np.ndarray:
+    """
+    Unflatten a rank 2 tensor to a rank 4 tensor using a specific reshaping.
+
+    This is the inverse operation of the flatten_rank_4_tensor function.
+    The tensor is assumed to be of shape (k * m, l * n) and is reshaped to a tensor
+    of shape (k, l, m, n). The reshaping is done by splitting the first axis into
+    two axes, and then the second axis into two axes.
+
+    Parameters
+    ----------
+    tensor : np.ndarray (shape=(k * m, l * n))
+            Tensor to unflatten.
+    shape : tuple
+            Shape of the original tensor. Must be of rank 4.
+
+    Returns
+    -------
+    unflattened_tensor : np.ndarray (shape=(k, l, m, n))
+            Unflattened tensor.
+    """
+    # Check if the tensor is of rank 2
+    if len(tensor.shape) != 2:
+        raise ValueError(
+            "The tensor is not of rank 2. "
+            f"Expected rank 2 but got {len(tensor.shape)}."
+        )
+    # Check if the shape is of rank 4
+    if len(new_shape) != 4:
+        raise ValueError(
+            "The shape is not of rank 4. " f"Expected rank 4 but got {len(new_shape)}."
+        )
+    # Check if the shapes match
+    if not new_shape[0] * new_shape[2] == tensor.shape[0]:
+        raise ValueError(
+            "The shape of the tensor does not match the given dimensions. "
+            f"Expected {new_shape[0] * new_shape[2]} but got {tensor.shape[0]}."
+        )
+    if not new_shape[1] * new_shape[3] == tensor.shape[1]:
+        raise ValueError(
+            "The shape of the tensor does not match the given dimensions. "
+            f"Expected {new_shape[1] * new_shape[3]} but got {tensor.shape[1]}."
+        )
+    _tensor = tensor.reshape(new_shape[0], new_shape[2], new_shape[1], new_shape[3])
+    return np.moveaxis(_tensor, [2, 1], [1, 2])
 
 
 # def calculate_trace(matrix: np.ndarray, normalize: bool = False) -> np.ndarray:

@@ -21,8 +21,20 @@ Summary
 -------
 """
 
-from papyrus.utils.matrix_utils import *
+from papyrus.utils.matrix_utils import (
+    compute_grammian_diagonal_distribution,
+    compute_hermitian_eigensystem,
+    compute_l_pq_norm,
+    flatten_rank_4_tensor,
+    normalize_gram_matrix,
+    unflatten_rank_4_tensor,
+)
 
 __all__ = [
-    matrix_utils.__name__,
+    compute_hermitian_eigensystem.__name__,
+    normalize_gram_matrix.__name__,
+    compute_grammian_diagonal_distribution.__name__,
+    compute_l_pq_norm.__name__,
+    flatten_rank_4_tensor.__name__,
+    unflatten_rank_4_tensor.__name__,
 ]
