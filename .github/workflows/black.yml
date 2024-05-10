@@ -1,6 +1,6 @@
 name: Check black coding style
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   lint:
