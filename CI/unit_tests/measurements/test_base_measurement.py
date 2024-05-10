@@ -98,4 +98,4 @@ class TestBaseMeasurement:
         assert np.allclose(result, a + b + c)
         result = measurement(a, b=b)
         print(result)
-        assert np.allclose(result, a + b -1)
+        assert np.allclose(result, a + b - 1)
