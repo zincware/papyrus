@@ -46,7 +46,7 @@ def compute_trace(matrix: np.ndarray, normalize: bool = False) -> np.ndarray:
     return np.trace(matrix) / normalization_factor
 
 
-def compute_shannon_entropy(dist: np.ndarray, normalize: bool = False) -> float:
+def compute_shannon_entropy(dist: np.ndarray, effective: bool = False) -> float:
     """
     Compute the Shannon entropy of a given probability distribution.
 
@@ -57,7 +57,7 @@ def compute_shannon_entropy(dist: np.ndarray, normalize: bool = False) -> float:
     ----------
     dist : np.ndarray
             Array to calculate the entropy of.
-    normalize : bool (default = False)
+    effective : bool (default = False)
             If true, the Shannon entropy is normalized by re-scaling to the maximum
             entropy. The method will return a value between 0 and 1.
 
@@ -69,7 +69,7 @@ def compute_shannon_entropy(dist: np.ndarray, normalize: bool = False) -> float:
     scaled_values = -1 * dist[mask] * np.log(dist[mask])
     entropy = scaled_values.sum()
 
-    if normalize:
+    if effective:
         scale_factor = np.log(len(dist))
         entropy /= scale_factor
 

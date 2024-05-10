@@ -57,15 +57,15 @@ class TestMatrixUtils:
         """
         dist = np.array([0.2, 0.2, 0.2, 0.2, 0.2])
         assert_almost_equal(compute_shannon_entropy(dist), np.log(5))
-        assert_almost_equal(compute_shannon_entropy(dist, normalize=True), 1.0)
+        assert_almost_equal(compute_shannon_entropy(dist, effective=True), 1.0)
 
         dist = np.array([0, 0, 0, 0, 1])
         assert compute_shannon_entropy(dist) == 0
-        assert compute_shannon_entropy(dist, normalize=True) == 0
+        assert compute_shannon_entropy(dist, effective=True) == 0
 
         dist = np.array([0, 0, 0, 0.5, 0.5])
         assert compute_shannon_entropy(dist) == np.log(2)
-        s = compute_shannon_entropy(dist, normalize=True)
+        s = compute_shannon_entropy(dist, effective=True)
         assert s == np.log(2) / np.log(5)
 
     def test_compute_von_neumann_entropy(self):
