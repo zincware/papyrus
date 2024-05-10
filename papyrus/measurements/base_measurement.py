@@ -33,7 +33,7 @@ class BaseMeasurement(ABC):
     A measurement is a class that records an aspect of the learning process.
     """
 
-    def __init__(self, name: str, rank: int):
+    def __init__(self, name: str, rank: int, public: bool = False):
         """
         Constructor method of the BaseMeasurement class.
 
@@ -41,13 +41,17 @@ class BaseMeasurement(ABC):
             The name of the measurement, defining how the instance in the database will
             be identified.
         rank : int
-            The rank of the measurement, defining the order in which the measurement
-            will be recorded.
+            The rank of the measurement, defining the tensor order of the measurement.
+        public : bool
+            Boolean flag to indicate whether the measurement will be accessible as a
+            public attribute of the recorder. If True, the measurement will be stored
+            in the temporary data dictionary of the recorder.
         """
         self.name = name
         self.rank = rank
+        self.public = public
 
-        if not isinstance(self.rank, int) and self.rank < 1:
+        if not isinstance(self.rank, int) or self.rank < 1:
             raise ValueError("Rank must be a positive integer.")
 
     def apply_fn(self, *args: np.ndarray, **kwargs: np.ndarray) -> np.ndarray:
@@ -79,23 +83,29 @@ class BaseMeasurement(ABC):
         """
         Method to perform the measurement.
 
-        This method should be implemented in the child class.
+        This method calls the apply_fn method on each input and returns the result.
+
         It can take any number of arguments and keyword arguments and should return
         the measurement result.
-
         All inputs should be numpy arrays, with their first dimension indicating the
-        number of eqivalent measurements to be performed.
+        number of eqivalent measurements to be performed. The remaining dimensions
+        should be the same for all inputs, as they are the arguments to the function.
+        In case of one input, the first dimension should be 1.
 
         Returns
         -------
         np.ndarray
             The result of the measurement.
         """
-        # Get the keys and values of the keyword arguments
-        keys, vals = zip(*kwargs.items())
+        # Get the number of arguments
+        num_args = len(args)
+        # Get the keys and values of the keyword arguments if any
+        keys = list(kwargs.keys())
+        vals = list(kwargs.values())
         # Zip the arguments and values
         z = zip(*args, *vals)
-        # Get the length of the keys to split the zipped values later
-        l = len(keys)
+
         # Perform the measurement on each set of inputs
-        return np.array([self.apply_fn(i[:l], dict(zip(keys, i[l:]))) for i in z])
+        return np.array(
+            [self.apply_fn(*i[:num_args], **dict(zip(keys, i[num_args:]))) for i in z]
+        )
