@@ -22,6 +22,8 @@ Summary
 """
 
 from abc import ABC
+from typing import List
+from inspect import signature
 
 import numpy as np
 
@@ -51,6 +53,10 @@ class BaseMeasurement(ABC):
     public : bool
             Boolean flag to indicate whether the measurement resutls will be accessible
             via a public attribute of the recorder.
+    neural_state_keys : List[str]
+            The keys of the neural state that the measurement takes as input.
+            A neural state is a dictionary of numpy arrays that represent the state of
+            a neural network. The keys are the names of the kwargs of the apply method.
     """
 
     def __init__(self, name: str, rank: int, public: bool = False):
@@ -68,11 +74,17 @@ class BaseMeasurement(ABC):
                 accessible via a public attribute of the recorder.
         """
         self.name = name
+        # self.takes_states = takes_states
         self.rank = rank
         self.public = public
 
         if not isinstance(self.rank, int) or self.rank < 0:
             raise ValueError("Rank must be a positive integer.")
+        
+        # Get the neural state keys that the measurement takes as input
+        self.neural_state_keys = []
+        self.neural_state_keys.extend(signature(self.apply).parameters.keys())
+        
 
     def apply(self, *args: np.ndarray, **kwargs: np.ndarray) -> np.ndarray:
         """

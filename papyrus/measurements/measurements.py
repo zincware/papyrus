@@ -23,6 +23,7 @@ Module containing default measurements for recording neural learning.
 """
 
 from typing import Callable, Optional
+from typing import List
 
 import numpy as np
 
@@ -41,6 +42,18 @@ from papyrus.utils.matrix_utils import (
 class Loss(BaseMeasurement):
     """
     Measurement class to record the loss of a neural network.
+
+    Neural State Keys
+    -----------------
+    predictions : np.ndarray
+            The predictions of the neural network. Required if the loss function is 
+            provided. Needs to be combined with the targets key.
+    targets : np.ndarray 
+            The target values of the neural network. Required if the loss function is 
+            provided. Needs to be combined with the predictions key.
+    loss : float
+            The loss of the neural network. Required if the loss function is not 
+            provided. Allows to measure precomputed loss values.
     """
 
     def __init__(
@@ -56,21 +69,23 @@ class Loss(BaseMeasurement):
         Parameters
         ----------
         name : str (default="loss")
-            The name of the measurement, defining how the instance in the database will
-            be identified.
+                The name of the measurement, defining how the instance in the database 
+                will be identified.
         rank : int (default=0)
-            The rank of the measurement, defining the tensor order of the measurement.
+                The rank of the measurement, defining the tensor order of the 
+                measurement.
         public : bool (default=False)
-            Boolean flag to indicate whether the measurement resutls will be accessible
-            via a public attribute of the recorder.
+                Boolean flag to indicate whether the measurement resutls will be 
+                accessible via a public attribute of the recorder.
         loss_fn : Optional[Callable] (default=None)
-            The loss function to be used to compute the loss of the neural network.
-            If the loss function is not provided, the apply method will assume that the
-            loss is used as the input.
-            If the loss function is provided, the apply method will assume that the
-            neural network outputs and the target values are used as inputs.
+                The loss function to be used to compute the loss of the neural network.
+                If the loss function is not provided, the apply method will assume that 
+                the loss is used as the input.
+                If the loss function is provided, the apply method will assume that the
+                neural network outputs and the target values are used as inputs.
         """
         super().__init__(name, rank, public)
+        self.loss_fn = loss_fn
 
     def apply(
         self,
@@ -81,14 +96,16 @@ class Loss(BaseMeasurement):
         """
         Method to record the loss of a neural network.
 
+        Parameters need to be provided as keyword arguments.
+
         Parameters
         ----------
         loss : Optional[float] (default=None)
-            The loss of the neural network.
+                The loss of the neural network.
         predictions : Optional[np.ndarray] (default=None)
-            The predictions of the neural network.
+                The predictions of the neural network.
         targets : Optional[np.ndarray] (default=None)
-            The target values of the neural network.
+                The target values of the neural network.
 
         Returns
         -------
@@ -115,6 +132,18 @@ class Loss(BaseMeasurement):
 class Accuracy(BaseMeasurement):
     """
     Measurement class to record the accuracy of a neural network.
+
+    Neural State Keys
+    -----------------
+    predictions : np.ndarray
+            The predictions of the neural network. Required if the loss function is 
+            provided. Needs to be combined with the targets key.
+    targets : np.ndarray 
+            The target values of the neural network. Required if the loss function is 
+            provided. Needs to be combined with the predictions key.
+    accuracy : float
+            The accuracy of the neural network. Required if the accuracy function is not 
+            provided. Allows to measure precomputed loss values.
     """
 
     def __init__(
@@ -130,20 +159,20 @@ class Accuracy(BaseMeasurement):
         Parameters
         ----------
         name : str (default="accuracy")
-            The name of the measurement, defining how the instance in the database will
-            be identified.
+                The name of the measurement, defining how the instance in the database will
+                be identified.
         rank : int (default=0)
-            The rank of the measurement, defining the tensor order of the measurement.
+                The rank of the measurement, defining the tensor order of the measurement.
         public : bool (default=False)
-            Boolean flag to indicate whether the measurement resutls will be accessible
-            via a public attribute of the recorder.
+                Boolean flag to indicate whether the measurement resutls will be accessible
+                via a public attribute of the recorder.
         accuracy_fn : Optional[Callable] (default=None)
-            The accuracy function to be used to compute the accuracy of the neural
-            network.
-            If the accuracy function is not provided, the apply method will assume that
-            the accuracy is used as the input.
-            If the accuracy function is provided, the apply method will assume that the
-            neural network outputs and the target values are used as inputs.
+                The accuracy function to be used to compute the accuracy of the neural
+                network.
+                If the accuracy function is not provided, the apply method will assume that
+                the accuracy is used as the input.
+                If the accuracy function is provided, the apply method will assume that the
+                neural network outputs and the target values are used as inputs.
         """
         super().__init__(name, rank, public)
         self.accuracy_fn = accuracy_fn
@@ -157,14 +186,16 @@ class Accuracy(BaseMeasurement):
         """
         Method to record the accuracy of a neural network.
 
+        Parameters need to be provided as keyword arguments.
+
         Parameters
         ----------
         accuracy : Optional[float] (default=None)
-            The accuracy of the neural network.
+                The accuracy of the neural network.
         predictions : Optional[np.ndarray] (default=None)
-            The predictions of the neural network.
+                The predictions of the neural network.
         targets : Optional[np.ndarray] (default=None)
-            The target values of the neural network.
+                The target values of the neural network.
 
         Returns
         -------
@@ -192,6 +223,11 @@ class Accuracy(BaseMeasurement):
 class NTKTrace(BaseMeasurement):
     """
     Measurement class to record the trace of the NTK.
+
+    Neural State Keys
+    -----------------
+    ntk : np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
     """
 
     def __init__(
@@ -207,16 +243,17 @@ class NTKTrace(BaseMeasurement):
         Parameters
         ----------
         name : str (default="ntk_trace")
-            The name of the measurement, defining how the instance in the database will
-            be identified.
+                The name of the measurement, defining how the instance in the database
+                will be identified.
         rank : int (default=1)
-            The rank of the measurement, defining the tensor order of the measurement.
+                The rank of the measurement, defining the tensor order of the 
+                measurement.
         public : bool (default=False)
-            Boolean flag to indicate whether the measurement resutls will be accessible
-            via a public attribute of the recorder.
+                Boolean flag to indicate whether the measurement resutls will be 
+                accessible via a public attribute of the recorder.
         normalize : bool (default=True)
-            Boolean flag to indicate whether the trace of the NTK will be normalized by
-            the size of the NTK matrix.
+                Boolean flag to indicate whether the trace of the NTK will be normalized
+                by the size of the NTK matrix.
         """
         super().__init__(name, rank, public)
         self.normalise = normalize
@@ -241,6 +278,11 @@ class NTKTrace(BaseMeasurement):
 class NTKEntropy(BaseMeasurement):
     """
     Measurement class to record the entropy of the NTK.
+
+    Neural State Keys
+    -----------------
+    ntk : np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
     """
 
     def __init__(
@@ -268,8 +310,8 @@ class NTKEntropy(BaseMeasurement):
         normalize_eigenvalues : bool (default=True)
                 If true, the eigenvalues are scaled to look like probabilities.
         effective : bool (default=False)
-            If true, the entropy is divided by the theoretical maximum entropy of
-            the system thereby returning the effective entropy / entropy density.
+                If true, the entropy is divided by the theoretical maximum entropy of
+                the system thereby returning the effective entropy / entropy density.
 
         """
         super().__init__(name=name, rank=rank, public=public)
@@ -317,6 +359,11 @@ class NTKSelfEntropy(BaseMeasurement):
 
     This measurement can be interpreted as the entropy of the self-correlation of data
     in a neural network.
+
+    Neural State Keys
+    -----------------
+    ntk : np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
     """
 
     def __init__(
@@ -332,16 +379,17 @@ class NTKSelfEntropy(BaseMeasurement):
         Parameters
         ----------
         name : str (default="ntk_magnitude_distribution")
-            The name of the measurement, defining how the instance in the database will
-            be identified.
+                The name of the measurement, defining how the instance in the database
+                will be identified.
         rank : int (default=1)
-            The rank of the measurement, defining the tensor order of the measurement.
+                The rank of the measurement, defining the tensor order of the 
+                measurement.
         public : bool (default=False)
-            Boolean flag to indicate whether the measurement resutls will be accessible
-            via a public attribute of the recorder.
+                Boolean flag to indicate whether the measurement resutls will be
+                accessible via a public attribute of the recorder.
         effective : bool (default=False)
-            Boolean flag to indicate whether the self-entropy of the NTK will be
-            normalized by the theoretical maximum entropy of the system.
+                Boolean flag to indicate whether the self-entropy of the NTK will be
+                normalized by the theoretical maximum entropy of the system.
         """
         super().__init__(name, rank, public)
         self.effective = effective
@@ -377,6 +425,12 @@ class NTKMagnitudeDistribution(BaseMeasurement):
     **cannot** be applied on varying number of inputs. This is because the number of
     dimensions of the input need to be same for all subsequent calls, otherwise an error
     will be raised when storing the results in the database.
+
+
+    Neural State Keys
+    -----------------
+    ntk : np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
     """
 
     def __init__(
@@ -391,13 +445,14 @@ class NTKMagnitudeDistribution(BaseMeasurement):
         Parameters
         ----------
         name : str (default="ntk_magnitude_distribution")
-            The name of the measurement, defining how the instance in the database will
-            be identified.
+                The name of the measurement, defining how the instance in the database
+                will be identified.
         rank : int (default=1)
-            The rank of the measurement, defining the tensor order of the measurement.
+                The rank of the measurement, defining the tensor order of the 
+                measurement.
         public : bool (default=False)
-            Boolean flag to indicate whether the measurement resutls will be accessible
-            via a public attribute of the recorder.
+                Boolean flag to indicate whether the measurement resutls will be
+                accessible via a public attribute of the recorder.
         """
         super().__init__(name, rank, public)
 
@@ -431,6 +486,11 @@ class NTKEigenvalues(BaseMeasurement):
     **cannot** be applied on varying number of inputs. This is because the number of
     dimensions of the input need to be same for all subsequent calls, otherwise an error
     will be raised when storing the results in the database.
+
+    Neural State Keys
+    -----------------
+    ntk : np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
     """
 
     def __init__(
@@ -446,16 +506,17 @@ class NTKEigenvalues(BaseMeasurement):
         Parameters
         ----------
         name : str (default="ntk_eigenvalues")
-            The name of the measurement, defining how the instance in the database will
-            be identified.
+                The name of the measurement, defining how the instance in the database
+                will be identified.
         rank : int (default=1)
-            The rank of the measurement, defining the tensor order of the measurement.
+                The rank of the measurement, defining the tensor order of the 
+                measurement.
         public : bool (default=False)
-            Boolean flag to indicate whether the measurement resutls will be accessible
-            via a public attribute of the recorder.
+                Boolean flag to indicate whether the measurement resutls will be
+                accessible via a public attribute of the recorder.
         normalize : bool (default=True)
-            Boolean flag to indicate whether the eigenvalues of the NTK will be
-            normalized by the size of the NTK matrix.
+                Boolean flag to indicate whether the eigenvalues of the NTK will be
+                normalized by the size of the NTK matrix.
         """
         super().__init__(name, rank, public)
         self.normalize = normalize
