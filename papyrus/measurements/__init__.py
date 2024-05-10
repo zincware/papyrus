@@ -22,7 +22,23 @@ Summary
 """
 
 from papyrus.measurements.base_measurement import BaseMeasurement
+from papyrus.measurements.measurements import (
+    Accuracy,
+    Loss,
+    NTKEigenvalues,
+    NTKEntropy,
+    NTKMagnitudeDistribution,
+    NTKSelfEntropy,
+    NTKTrace,
+)
 
 __all__ = [
     BaseMeasurement.__name__,
+    NTKTrace.__name__,
+    NTKEntropy.__name__,
+    NTKSelfEntropy.__name__,
+    NTKEigenvalues.__name__,
+    NTKMagnitudeDistribution.__name__,
+    Loss.__name__,
+    Accuracy.__name__,
 ]
