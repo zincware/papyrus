@@ -158,20 +158,21 @@ class Accuracy(BaseMeasurement):
         Parameters
         ----------
         name : str (default="accuracy")
-                The name of the measurement, defining how the instance in the database will
-                be identified.
+                The name of the measurement, defining how the instance in the database
+                will be identified.
         rank : int (default=0)
-                The rank of the measurement, defining the tensor order of the measurement.
+                The rank of the measurement, defining the tensor order of the
+                measurement.
         public : bool (default=False)
-                Boolean flag to indicate whether the measurement resutls will be accessible
-                via a public attribute of the recorder.
+                Boolean flag to indicate whether the measurement resutls will be
+                accessible via a public attribute of the recorder.
         accuracy_fn : Optional[Callable] (default=None)
                 The accuracy function to be used to compute the accuracy of the neural
                 network.
-                If the accuracy function is not provided, the apply method will assume that
-                the accuracy is used as the input.
-                If the accuracy function is provided, the apply method will assume that the
-                neural network outputs and the target values are used as inputs.
+                # If the accuracy function is not provided, the apply method will assume
+                that the accuracy is used as the input.
+                If the accuracy function is provided, the apply method will assume that
+                the neural network outputs and the target values are used as inputs.
         """
         super().__init__(name, rank, public)
         self.accuracy_fn = accuracy_fn
