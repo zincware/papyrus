@@ -27,7 +27,7 @@ from typing import Optional
 import numpy as np
 import pytest
 
-from papyrus.measurements.base_measurement import BaseMeasurement
+from papyrus.measurements import BaseMeasurement
 
 
 class DummyMeasurement(BaseMeasurement):

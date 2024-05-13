@@ -15,3 +15,6 @@ keywords = ["neural networks", "artificial intelligence"]
 license = {file = "LICENSE"}
 
 version = "0.0.1"
+
+[tool.pytest.ini_options]
+pythonpath = ["papyrus",]
