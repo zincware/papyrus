@@ -21,7 +21,7 @@ Summary
 -------
 """
 
-from papyrus.neural_state.neural_state import NeuralState
+from papyrus.neural_state import NeuralState
 
 
 class TestNeuralState:

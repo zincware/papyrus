@@ -23,7 +23,7 @@ Summary
 
 import numpy as np
 
-from papyrus.neural_state.neural_state_creator import NeuralStateCreator
+from papyrus.neural_state import NeuralStateCreator
 
 
 class TestNeuralStateCreator:
