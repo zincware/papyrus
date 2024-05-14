@@ -121,7 +121,7 @@ class BaseRecorder(ABC):
         """
         # By combining storage path and name, we can load the data
         data = np.load(self.storage_path + self.name + ".npz")
-        return data
+        return dict(data)
 
     def _measure(self, **neural_state):
         """
@@ -161,11 +161,12 @@ class BaseRecorder(ABC):
         if epoch % self.chunk_size == 0:
             # Load the data from the database
             try:
-                data = dict(self.load())
+                data = self.load()
                 # Append the new data
                 for key in self._results.keys():
                     data[key] = np.append(data[key], self._results[key], axis=0)
-            except:
+            # If the file does not exist, create a new one
+            except FileNotFoundError:
                 data = self._results
 
             # Write the data back to the database
