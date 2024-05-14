@@ -59,7 +59,7 @@ def compute_hermitian_eigensystem(
     eigenvalues, eigenvectors = np.linalg.eigh(matrix)
 
     if clip:
-        logger.warning("Eigenvalues are being clipped to avoid negative values.")
+        # logger.warning("Eigenvalues are being clipped to avoid negative values.")
         eigenvalues = np.clip(eigenvalues, 1e-14, None)
 
     if normalize:

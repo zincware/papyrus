@@ -60,7 +60,6 @@ class TestNeuralState:
             targets=[],
             ntk=[],
         )
-        print(neural_state.get_dict())
         assert neural_state.get_dict() == {
             "loss": [],
             "accuracy": [],
