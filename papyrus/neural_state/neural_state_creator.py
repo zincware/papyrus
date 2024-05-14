@@ -40,7 +40,9 @@ class NeuralStateCreator:
             NeuralState instance.
     """
 
-    def __init__(self, network_apply_fn: callable, ntk_apply_fn: callable):
+    def __init__(
+        self, network_apply_fn: callable, ntk_apply_fn: callable, data_keys: list = None
+    ):
         """
         Initialize the NeuralStateCreator instance.
 
@@ -52,11 +54,20 @@ class NeuralStateCreator:
         ntk_apply_fn : callable
                 The apply function that maps the data and parameter state to a
                 NeuralState instance.
+        data_keys : list
+                The keys of the data dictionary that are used in the apply functions.
+                Note that the first key is always the input data and the second key is
+                always the target data.
+                Default is ["inputs", "targets"].
         """
         self.apply_fns = {
             "predictions": network_apply_fn,
             "ntk": ntk_apply_fn,
         }
+        if data_keys is not None:
+            self.data_keys = data_keys
+        else:
+            self.data_keys = ["inputs", "targets"]
 
     def __call__(self, params: dict, data: dict, **kwargs) -> NeuralState:
         """
@@ -77,10 +88,27 @@ class NeuralStateCreator:
         NeuralState
                 The neural state that is created by the apply functions.
         """
+        # Check if the data and parameters are in the correct format
+        assert isinstance(params, dict), "The parameters need to be a dictionary."
+        assert isinstance(data, dict), "The data needs to be a dictionary."
+        # Check if the data dictionary contains the correct keys
+        if not all([key in data.keys() for key in self.data_keys]):
+            raise KeyError(
+                "The data dictionary needs to contain the keys: "
+                + ", ".join(self.data_keys)
+                + ". "
+                + "The data dictionary contains the keys: "
+                + ", ".join(data.keys())
+                + ". "
+                + "Eather change the keys of the data dictionary or the data_keys "
+                + "attribute of the NeuralStateCreator instance."
+            )
         neural_state = NeuralState()
 
         for key, apply_fn in self.apply_fns.items():
-            neural_state.__setattr__(key, apply_fn(params, data))
+            neural_state.__setattr__(key, apply_fn(params, data[self.data_keys[0]]))
+
+        neural_state.__setattr__("targets", data[self.data_keys[1]])
 
         for key, value in kwargs.items():
             neural_state.__setattr__(key, value)
