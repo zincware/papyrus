@@ -103,6 +103,8 @@ class BaseRecorder(ABC):
         """
         Write data to the database using np.savez
 
+        TODO: Change this method to use another type of storage.
+
         Parameters
         ----------
         data : dict
@@ -112,7 +114,9 @@ class BaseRecorder(ABC):
 
     def load(self):
         """
-        Load the data from the database using np.load
+        Load the data from the database using np.load.
+
+        TODO: Change this method to use another type of storage.
 
         Returns
         -------
@@ -152,6 +156,8 @@ class BaseRecorder(ABC):
         Store the results of the measurements in the database.
 
         This method loads and writes the data to the database in chunks.
+
+        TODO: Change this method to use another type of storage.
 
         Parameters
         ----------
