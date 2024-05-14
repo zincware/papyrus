@@ -21,8 +21,8 @@ Summary
 -------
 """
 
-from neural_state.neural_state import NeuralState
-from neural_state.neural_state_creator import NeuralStateCreator
+from papyrus.neural_state.neural_state import NeuralState
+from papyrus.neural_state.neural_state_creator import NeuralStateCreator
 
 __all__ = [
     NeuralState.__name__,
