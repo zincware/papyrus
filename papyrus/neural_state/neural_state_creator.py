@@ -95,11 +95,8 @@ class NeuralStateCreator:
         if not all([key in data.keys() for key in self.data_keys]):
             raise KeyError(
                 "The data dictionary needs to contain the keys: "
-                + ", ".join(self.data_keys)
-                + ". "
-                + "The data dictionary contains the keys: "
-                + ", ".join(data.keys())
-                + ". "
+                + f"{self.data_keys}."
+                + f"Instead, the data dictionary contains the keys: {data.keys()}."
                 + "Eather change the keys of the data dictionary or the data_keys "
                 + "attribute of the NeuralStateCreator instance."
             )
