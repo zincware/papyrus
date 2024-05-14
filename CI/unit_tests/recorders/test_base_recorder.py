@@ -21,11 +21,13 @@ Summary
 -------
 """
 
+import os
+
 import numpy as np
 from numpy.testing import assert_array_equal
 
-from papyrus.measurements.base_measurement import BaseMeasurement
-from papyrus.recorders.base_recorder import BaseRecorder
+from papyrus.measurements import BaseMeasurement
+from papyrus.recorders import BaseRecorder
 
 
 class DummyMeasurement1(BaseMeasurement):
@@ -145,3 +147,61 @@ class TestBaseRecorder:
             recorder._results["dummy_1"], 1 * np.ones(shape=(2, 3, 10, 5))
         )
         assert_array_equal(recorder._results["dummy_2"], 10 * np.ones(shape=(2, 3, 10)))
+
+    def test_write_read(self):
+        """
+        Test the write and read methods of the BaseRecorder class.
+        """
+        # Create a temporary directory
+        os.makedirs("temp/", exist_ok=True)
+        name = "test"
+        storage_path = "temp/"
+        recorder = BaseRecorder(
+            name, storage_path, [self.measurement_1, self.measurement_2], 10
+        )
+
+        # Test writing and reading
+        recorder._measure(**self.neural_state)
+        recorder._write(recorder._results)
+        data = recorder.load()
+
+        assert set(data.keys()) == {"dummy_1", "dummy_2"}
+        assert_array_equal(data["dummy_1"], np.ones(shape=(1, 3, 10, 5)))
+        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(1, 3, 10)))
+
+        # Delete temporary directory
+        os.system("rm -r temp/")
+
+    def test_store(self):
+        """
+        Test the store method of the BaseRecorder class.
+        """
+        # Create a temporary directory
+        os.makedirs("temp/", exist_ok=True)
+        name = "test"
+        storage_path = "temp/"
+        recorder = BaseRecorder(
+            name, storage_path, [self.measurement_1, self.measurement_2], 10
+        )
+
+        # Test storing
+        recorder._measure(**self.neural_state)
+        recorder._store(0)
+        data = recorder.load()
+
+        assert set(data.keys()) == {"dummy_1", "dummy_2"}
+        assert_array_equal(data["dummy_1"], np.ones(shape=(1, 3, 10, 5)))
+        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(1, 3, 10)))
+
+        # Test storing again
+        recorder._measure(**self.neural_state)
+        recorder._store(10)
+        data = recorder.load()
+
+        assert set(data.keys()) == {"dummy_1", "dummy_2"}
+        print(data["dummy_1"].shape)
+        assert_array_equal(data["dummy_1"], np.ones(shape=(2, 3, 10, 5)))
+        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(2, 3, 10)))
+
+        # Delete temporary directory
+        os.system("rm -r temp/")

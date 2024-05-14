@@ -25,6 +25,8 @@ Base module for a recorder.
 from abc import ABC
 from typing import List
 
+import numpy as np
+
 from papyrus.measurements.base_measurement import BaseMeasurement
 
 
@@ -89,7 +91,37 @@ class BaseRecorder(ABC):
         self.neural_state_keys = list(set(self.neural_state_keys))
 
         # Temporary storage for results
-        self._results = {measurement.name: [] for measurement in measurements}
+        self._init_results()
+
+    def _init_results(self):
+        """
+        Initialize the temporary storage for the results.
+        """
+        self._results = {measurement.name: [] for measurement in self.measurements}
+
+    def _write(self, data: dict):
+        """
+        Write data to the database using np.savez
+
+        Parameters
+        ----------
+        data : dict
+                The data to be written to the database.
+        """
+        np.savez(self.storage_path + self.name, **data)
+
+    def load(self):
+        """
+        Load the data from the database using np.load
+
+        Returns
+        -------
+        data : dict
+                The data loaded from the database.
+        """
+        # By combining storage path and name, we can load the data
+        data = np.load(self.storage_path + self.name + ".npz")
+        return data
 
     def _measure(self, **neural_state):
         """
@@ -111,7 +143,7 @@ class BaseRecorder(ABC):
                 key: neural_state[key] for key in measurement.neural_state_keys
             }
             # Apply the measurement
-            result = measurement.apply(**sub_state)
+            result = measurement(**sub_state)
             # Store the result in the temporary storage
             self._results[measurement.name].append(result)
 
@@ -119,14 +151,27 @@ class BaseRecorder(ABC):
         """
         Store the results of the measurements in the database.
 
+        This method loads and writes the data to the database in chunks.
+
         Parameters
         ----------
         epoch : int
                 The epoch of recording.
         """
         if epoch % self.chunk_size == 0:
-            # TODO: Implement the storage of the results
-            pass
+            # Load the data from the database
+            try:
+                data = dict(self.load())
+                # Append the new data
+                for key in self._results.keys():
+                    data[key] = np.append(data[key], self._results[key], axis=0)
+            except:
+                data = self._results
+
+            # Write the data back to the database
+            self._write(data)
+            # Reinitialize the temporary storage
+            self._init_results()
 
     def record(self, epoch: int, neural_state: dict):
         """

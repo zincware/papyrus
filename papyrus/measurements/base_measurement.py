@@ -83,7 +83,21 @@ class BaseMeasurement(ABC):
 
         # Get the neural state keys that the measurement takes as input
         self.neural_state_keys: List[str] = []
-        self.neural_state_keys.extend(signature(self.apply).parameters.keys())
+        self.neural_state_keys = self._get_apply_signature()
+
+    def _get_apply_signature(self):
+        """
+        Method to get the signature of the apply method.
+
+        This method is used to get the signature of the apply method, in order to
+        determine the keys of the neural state that the measurement takes as input.
+
+        Returns
+        -------
+        List[str]
+                The keys of the neural state that the measurement takes as input.
+        """
+        return list(signature(self.apply).parameters.keys())
 
     def apply(self, *args: np.ndarray, **kwargs: np.ndarray) -> np.ndarray:
         """

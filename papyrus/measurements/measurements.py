@@ -86,11 +86,17 @@ class Loss(BaseMeasurement):
         super().__init__(name, rank, public)
         self.loss_fn = loss_fn
 
-    def apply(
+        # Based on the provided loss function, set the apply method
+        if self.loss_fn is None:
+            self.apply = self._apply_no_computation
+        else:
+            self.apply = self.apply_computation
+
+        self.neural_state_keys = self._get_apply_signature()
+
+    def _apply_no_computation(
         self,
         loss: Optional[float] = None,
-        predictions: Optional[np.ndarray] = None,
-        targets: Optional[np.ndarray] = None,
     ) -> float:
         """
         Method to record the loss of a neural network.
@@ -101,6 +107,26 @@ class Loss(BaseMeasurement):
         ----------
         loss : Optional[float] (default=None)
                 The loss of the neural network.
+
+        Returns
+        -------
+        loss : float
+            The loss of the neural network.
+        """
+        return loss
+
+    def _apply_computation(
+        self,
+        predictions: Optional[np.ndarray] = None,
+        targets: Optional[np.ndarray] = None,
+    ) -> float:
+        """
+        Method to record the loss of a neural network.
+
+        Parameters need to be provided as keyword arguments.
+
+        Parameters
+        ----------
         predictions : Optional[np.ndarray] (default=None)
                 The predictions of the neural network.
         targets : Optional[np.ndarray] (default=None)
@@ -111,20 +137,6 @@ class Loss(BaseMeasurement):
         loss : float
             The loss of the neural network.
         """
-        # Check if any of the inputs are None
-        if loss is None and (predictions is None or targets is None):
-            raise ValueError(
-                "Either the loss or the predictions and targets must be provided."
-            )
-        # Check if a loss value and the predictions and targets are provided
-        if loss is not None and (predictions is not None or targets is not None):
-            raise ValueError(
-                "Either the loss or the predictions and targets must be provided."
-            )
-        # If the loss is provided, return the loss
-        if loss is not None:
-            return loss
-        # If the loss is not provided, compute the loss using the loss function
         return self.loss_fn(predictions, targets)
 
 
@@ -177,9 +189,34 @@ class Accuracy(BaseMeasurement):
         super().__init__(name, rank, public)
         self.accuracy_fn = accuracy_fn
 
-    def apply(
+        # Based on the provided accuracy function, set the apply method
+        if self.accuracy_fn is None:
+            self.apply = self._apply_no_computation
+        else:
+            self.apply = self.apply_computation
+
+        self.neural_state_keys = self._get_apply_signature()
+
+    def _apply_no_computation(self, accuracy: Optional[float] = None) -> float:
+        """
+        Method to record the accuracy of a neural network.
+
+        Parameters need to be provided as keyword arguments.
+
+        Parameters
+        ----------
+        accuracy : Optional[float] (default=None)
+                The accuracy of the neural network.
+
+        Returns
+        -------
+        accuracy : float
+            The accuracy of the neural network.
+        """
+        return accuracy
+
+    def apply_computation(
         self,
-        accuracy: Optional[float] = None,
         predictions: Optional[np.ndarray] = None,
         targets: Optional[np.ndarray] = None,
     ) -> float:
@@ -202,21 +239,6 @@ class Accuracy(BaseMeasurement):
         accuracy : float
             The accuracy of the neural network.
         """
-        # Check if any of the inputs are None
-        if accuracy is None and (predictions is None or targets is None):
-            raise ValueError(
-                "Either the accuracy or the predictions and targets must be provided."
-            )
-        # Check if a loss value and the predictions and targets are provided
-        if accuracy is not None and (predictions is not None or targets is not None):
-            raise ValueError(
-                "Either the accuracy or the predictions and targets must be provided."
-            )
-        # If the accuracy is provided, return the accuracy
-        if accuracy is not None:
-            return accuracy
-        # If the accuracy is not provided, compute the accuracy using the accuracy
-        # function
         return self.accuracy_fn(predictions, targets)
 
 
