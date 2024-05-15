@@ -63,6 +63,7 @@ class BaseRecorder(ABC):
         storage_path: str,
         measurements: List[BaseMeasurement],
         chunk_size: int,
+        overwrite: bool = False,
     ):
         """
         Constructor method of the BaseRecorder class.
@@ -78,20 +79,32 @@ class BaseRecorder(ABC):
                 The measurements that the recorder will apply.
         chunk_size : int
                 The size of the chunks in which the data will be stored.
+        overwrite : bool (default=False)
+                Whether to overwrite the existing data in the database.
         """
         self.name = name
         self.storage_path = storage_path
         self.measurements = measurements
         self.chunk_size = chunk_size
+        self.overwrite = overwrite
 
         # Read in neural state keys from measurements
-        self.neural_state_keys = []
-        for measurement in measurements:
-            self.neural_state_keys.extend(measurement.neural_state_keys)
-        self.neural_state_keys = list(set(self.neural_state_keys))
+        self._read_neural_state_keys()
 
         # Temporary storage for results
         self._init_results()
+
+    def _read_neural_state_keys(self):
+        """
+        Read the neural state keys from the measurements.
+
+        Updates the neural_state_keys attribute of the recorder with the keys of the
+        neural state that the measurements take as input.
+        """
+        self.neural_state_keys = []
+        for measurement in self.measurements:
+            self.neural_state_keys.extend(measurement.neural_state_keys)
+        self.neural_state_keys = list(set(self.neural_state_keys))
 
     def _init_results(self):
         """
@@ -169,8 +182,11 @@ class BaseRecorder(ABC):
             try:
                 data = self.load()
                 # Append the new data
-                for key in self._results.keys():
-                    data[key] = np.append(data[key], self._results[key], axis=0)
+                if self.overwrite:
+                    data = self._results
+                else:
+                    for key in self._results.keys():
+                        data[key] = np.append(data[key], self._results[key], axis=0)
             # If the file does not exist, create a new one
             except FileNotFoundError:
                 data = self._results
