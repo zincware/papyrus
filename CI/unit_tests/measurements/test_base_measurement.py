@@ -104,5 +104,4 @@ class TestBaseMeasurement:
         result = measurement(a, b, c=c)
         assert np.allclose(result, a + b + c)
         result = measurement(a, b=b)
-        print(result)
         assert np.allclose(result, a + b)
