@@ -37,10 +37,6 @@ class BaseRecorder(ABC):
     A recorder is a class that applies and stores measurements. It is used to record
     the learning process of a neural network.
 
-    Note
-    ----
-    All recorders should inherit from this class and implement the apply method.
-
     Recorders that return arrays with sizes that depend on the number of inputs
     **cannot** be applied on varying number of inputs. This is because the number of
     dimensions of the input need to be same for all subsequent calls, otherwise an error
@@ -159,8 +155,7 @@ class BaseRecorder(ABC):
 
         Returns
         -------
-        result : np.ndarray
-                The result of the recorder.
+        Updates self._results containing the results of the measurements.
         """
         for measurement in self.measurements:
             # Get the neural state keys that the measurement takes as input
