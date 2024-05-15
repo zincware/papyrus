@@ -144,9 +144,21 @@ class BaseMeasurement(ABC):
         """
         # Get the number of arguments
         num_args = len(args)
+
         # Get the keys and values of the keyword arguments if any
         keys = list(kwargs.keys())
         vals = list(kwargs.values())
+
+        # Assert whether the length of dimension 0 of all inputs is the same
+        try:
+            inputs = args + tuple(vals)
+            assert all([len(i) == len(inputs[0]) for i in inputs])
+        except AssertionError:
+            raise ValueError(
+                f"The first dimension of all inputs to the {self.name} measurement "
+                "must be the same."
+            )
+
         # Zip the arguments and values
         z = zip(*args, *vals)
 
