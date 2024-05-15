@@ -60,7 +60,7 @@ class Loss(BaseMeasurement):
         name: str = "loss",
         rank: int = 0,
         public: bool = False,
-        loss_fn: Optional[Callable] = None,
+        apply_fn: Optional[Callable] = None,
     ):
         """
         Constructor method of the Loss class.
@@ -76,7 +76,7 @@ class Loss(BaseMeasurement):
         public : bool (default=False)
                 Boolean flag to indicate whether the measurement resutls will be
                 accessible via a public attribute of the recorder.
-        loss_fn : Optional[Callable] (default=None)
+        apply_fn : Optional[Callable] (default=None)
                 The loss function to be used to compute the loss of the neural network.
                 If the loss function is not provided, the apply method will assume that
                 the loss is used as the input.
@@ -84,7 +84,7 @@ class Loss(BaseMeasurement):
                 neural network outputs and the target values are used as inputs.
         """
         super().__init__(name, rank, public)
-        self.loss_fn = loss_fn
+        self.apply_fn = apply_fn
 
     def apply(
         self,
@@ -125,7 +125,7 @@ class Loss(BaseMeasurement):
         if loss is not None:
             return loss
         # If the loss is not provided, compute the loss using the loss function
-        return self.loss_fn(predictions, targets)
+        return self.apply_fn(predictions, targets)
 
 
 class Accuracy(BaseMeasurement):
@@ -150,7 +150,7 @@ class Accuracy(BaseMeasurement):
         name: str = "accuracy",
         rank: int = 0,
         public: bool = False,
-        accuracy_fn: Optional[Callable] = None,
+        apply_fn: Optional[Callable] = None,
     ):
         """
         Constructor method of the Accuracy class.
@@ -166,7 +166,7 @@ class Accuracy(BaseMeasurement):
         public : bool (default=False)
                 Boolean flag to indicate whether the measurement resutls will be
                 accessible via a public attribute of the recorder.
-        accuracy_fn : Optional[Callable] (default=None)
+        apply_fn : Optional[Callable] (default=None)
                 The accuracy function to be used to compute the accuracy of the neural
                 network.
                 # If the accuracy function is not provided, the apply method will assume
@@ -175,7 +175,7 @@ class Accuracy(BaseMeasurement):
                 the neural network outputs and the target values are used as inputs.
         """
         super().__init__(name, rank, public)
-        self.accuracy_fn = accuracy_fn
+        self.apply_fn = apply_fn
 
     def apply(
         self,
@@ -217,7 +217,7 @@ class Accuracy(BaseMeasurement):
             return accuracy
         # If the accuracy is not provided, compute the accuracy using the accuracy
         # function
-        return self.accuracy_fn(predictions, targets)
+        return self.apply_fn(predictions, targets)
 
 
 class NTKTrace(BaseMeasurement):
