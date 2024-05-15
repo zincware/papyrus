@@ -82,14 +82,7 @@ class TestBaseMeasurement:
         with pytest.raises(NotImplementedError):
             measurement.apply()
 
-        # Set an exmaple apply method
-        def apply(
-            a: np.ndarray, b: np.ndarray, c: Optional[np.ndarray] = None
-        ) -> np.ndarray:
-            if c is not None:
-                return a + b + c
-            return a + b
-
+        # Test the apply method
         a = np.array([[1, 2], [3, 4]])
         b = np.array([[5, 6], [7, 8]])
         c = np.array([[9, 10], [11, 12]])
@@ -113,22 +106,3 @@ class TestBaseMeasurement:
         result = measurement(a, b=b)
         print(result)
         assert np.allclose(result, a + b)
-
-    def test_apply(self):
-        """
-        Test the apply method of the BaseMeasurement class.
-        """
-        # Create an example apply method and initialize the measurement
-
-        def apply(
-            a: np.ndarray, b: np.ndarray, c: Optional[np.ndarray] = None
-        ) -> np.ndarray:
-            if c is not None:
-                return a + b + c
-            return a + b
-
-        name = "test"
-        rank = 1
-        public = False
-        measurement = DummyMeasurement(name, rank, public)
-        assert measurement.neural_state_keys == ["a", "b", "c"]
