@@ -51,6 +51,14 @@ class BaseRecorder(ABC):
     name : str
             The name of the recorder, defining the name of the file the data will be
             stored in.
+    storage_path : str
+            The path to the storage location of the recorder.
+    measurements : List[BaseMeasurement]
+            The measurements that the recorder will apply.
+    chunk_size : int
+            The size of the chunks in which the data will be stored.
+    overwrite : bool (default=False)
+            Whether to overwrite the existing data in the database.
     neural_state_keys : List[str]
             The keys of the neural state that the recorder takes as input.
             A neural state is a dictionary of numpy arrays that represent the state of
@@ -89,7 +97,7 @@ class BaseRecorder(ABC):
         self.overwrite = overwrite
 
         # Read in neural state keys from measurements
-        self._read_neural_state_keys()
+        self.neural_state_keys = self._read_neural_state_keys()
 
         # Temporary storage for results
         self._init_results()
@@ -101,10 +109,10 @@ class BaseRecorder(ABC):
         Updates the neural_state_keys attribute of the recorder with the keys of the
         neural state that the measurements take as input.
         """
-        self.neural_state_keys = []
+        neural_state_keys = []
         for measurement in self.measurements:
-            self.neural_state_keys.extend(measurement.neural_state_keys)
-        self.neural_state_keys = list(set(self.neural_state_keys))
+            neural_state_keys.extend(measurement.neural_state_keys)
+        return list(set(neural_state_keys))
 
     def _init_results(self):
         """
