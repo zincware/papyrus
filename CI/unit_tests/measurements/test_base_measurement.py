@@ -26,6 +26,7 @@ from typing import Optional
 
 import numpy as np
 import pytest
+from numpy.testing import assert_raises
 
 from papyrus.measurements import BaseMeasurement
 
@@ -105,3 +106,16 @@ class TestBaseMeasurement:
         assert np.allclose(result, a + b + c)
         result = measurement(a, b=b)
         assert np.allclose(result, a + b)
+
+        # Test error handling for wrong size of arguments
+        a = np.array([1, 2, 3])
+        b = np.array([[4, 5, 6], [7, 8, 9]])
+        c = np.array([[10, 11, 12], [13, 14, 15]])
+        with assert_raises(ValueError):
+            measurement(a, b, c)
+        with assert_raises(ValueError):
+            measurement(a=a, b=b, c=c)
+        with assert_raises(ValueError):
+            measurement(a, b=b, c=c)
+        with assert_raises(ValueError):
+            measurement(a, b, c=c)
