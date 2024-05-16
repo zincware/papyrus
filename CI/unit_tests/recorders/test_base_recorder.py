@@ -185,7 +185,7 @@ class TestBaseRecorder:
             name,
             storage_path,
             [self.measurement_1, self.measurement_2],
-            1,
+            4,
         )
 
         # Test storing
@@ -208,15 +208,15 @@ class TestBaseRecorder:
         # _results should be empty after storing
         assert recorder._results == {"dummy_1": [], "dummy_2": []}
 
-        # test overwriting
-        recorder.overwrite = True
+        # Test storing with ignore_chunk_size=False
         recorder._measure(**self.neural_state)
-        recorder.store()
+        recorder._measure(**self.neural_state)
+        recorder.store(ignore_chunk_size=False)
         data = recorder.load()
 
         assert set(data.keys()) == {"dummy_1", "dummy_2"}
-        assert_array_equal(data["dummy_1"], np.ones(shape=(1, 3, 10, 5)))
-        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(1, 3, 10)))
+        assert_array_equal(data["dummy_1"], np.ones(shape=(2, 3, 10, 5)))
+        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(2, 3, 10)))
 
         # Delete temporary directory
         temp_dir.cleanup()

@@ -190,19 +190,8 @@ class BaseRecorder(ABC):
         TODO: Change this method to use another type of storage.
         """
         if self._counter % self.chunk_size == 0 or ignore_chunk_size:
-            # Load the data from the database
-            try:
-                data = self.load()
-                # Append the new data
-                if self.overwrite:
-                    data = self._results
-                else:
-                    for key in self._results.keys():
-                        data[key] = np.append(data[key], self._results[key], axis=0)
-            # If the file does not exist, create a new one
-            except FileNotFoundError:
-                data = self._results
-
+            # Gather the data
+            data = self.gather()
             # Write the data back to the database
             self._write(data)
             # Reinitialize the temporary storage
@@ -210,8 +199,7 @@ class BaseRecorder(ABC):
 
     def gather(self):
         """
-        Gather the results that can be stored in the database or are still in the
-        temporary storage.
+        Gather the results from the temporary storage and the database.
 
         Returns
         -------
@@ -220,13 +208,20 @@ class BaseRecorder(ABC):
         """
         # Load the data from the database
         try:
-            data = self.load()
+            loaded_data = self.load()
+            # If the counter is 0, the temporary storage is empty
             if self._counter == 0:
-                return data
+                data = loaded_data
+            # Check if loaded data is empty
+            elif all([len(v) == 0 for v in loaded_data.values()]):
+                data = self._results
+            # Append the new data to the loaded data
             else:
-                # Append the new data
                 for key in self._results.keys():
-                    data[key] = np.append(data[key], self._results[key], axis=0)
+                    loaded_data[key] = np.append(
+                        loaded_data[key], self._results[key], axis=0
+                    )
+                data = loaded_data
         # If the file does not exist, create a new one
         except FileNotFoundError:
             data = self._results
