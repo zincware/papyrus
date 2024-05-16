@@ -23,6 +23,7 @@ Summary
 
 from papyrus.measurements.base_measurement import BaseMeasurement
 from papyrus.measurements.measurements import (
+    NTK,
     Accuracy,
     Loss,
     NTKEigenvalues,
@@ -41,4 +42,5 @@ __all__ = [
     NTKMagnitudeDistribution.__name__,
     Loss.__name__,
     Accuracy.__name__,
+    NTK.__name__,
 ]
