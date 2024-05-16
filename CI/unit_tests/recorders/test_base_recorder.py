@@ -28,6 +28,7 @@ from numpy.testing import assert_array_equal
 
 from papyrus.measurements import BaseMeasurement
 from papyrus.recorders import BaseRecorder
+import tempfile
 
 
 class DummyMeasurement1(BaseMeasurement):
@@ -101,7 +102,7 @@ class TestBaseRecorder:
         """
         # Test the constructor method
         name = "test"
-        storage_path = "test_path"
+        storage_path = "."
         recorder = BaseRecorder(
             name, storage_path, [self.measurement_1, self.measurement_2], 10
         )
@@ -131,7 +132,7 @@ class TestBaseRecorder:
         # Test measuring for the first time
 
         name = "test"
-        storage_path = "test_path"
+        storage_path = "."
         recorder = BaseRecorder(
             name, storage_path, [self.measurement_1, self.measurement_2], 10
         )
@@ -154,9 +155,9 @@ class TestBaseRecorder:
         Test the write and read methods of the BaseRecorder class.
         """
         # Create a temporary directory
-        os.makedirs("temp/", exist_ok=True)
+        temp_dir = tempfile.TemporaryDirectory()
         name = "test"
-        storage_path = "temp/"
+        storage_path = temp_dir.name
         recorder = BaseRecorder(
             name, storage_path, [self.measurement_1, self.measurement_2], 10
         )
@@ -171,16 +172,16 @@ class TestBaseRecorder:
         assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(1, 3, 10)))
 
         # Delete temporary directory
-        os.system("rm -r temp/")
+        temp_dir.cleanup()
 
     def test_store(self):
         """
         Test the store method of the BaseRecorder class.
         """
         # Create a temporary directory
-        os.makedirs("temp/", exist_ok=True)
+        temp_dir = tempfile.TemporaryDirectory()
         name = "test"
-        storage_path = "temp/"
+        storage_path = temp_dir.name
         recorder = BaseRecorder(
             name,
             storage_path,
@@ -219,17 +220,16 @@ class TestBaseRecorder:
         assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(1, 3, 10)))
 
         # Delete temporary directory
-        os.system("rm -r temp/")
+        temp_dir.cleanup()
 
     def test_counter(self):
         """
         Test the counter attribute of the BaseRecorder class.
         """
         # Create a temporary directory
-        os.makedirs("temp/", exist_ok=True)
-
+        temp_dir = tempfile.TemporaryDirectory()
         name = "test"
-        storage_path = "temp/"
+        storage_path = temp_dir.name
         recorder = BaseRecorder(
             name,
             storage_path,
@@ -251,4 +251,74 @@ class TestBaseRecorder:
         assert recorder._counter == 0
 
         # Delete temporary directory
-        os.system("rm -r temp/")
+        temp_dir.cleanup()
+
+    def test_gather(self):
+        """
+        Test the gather method of the BaseRecorder class.
+        """
+        # Test gather if stored and unstored data is present
+        temp_dir = tempfile.TemporaryDirectory()
+        name = "test"
+        storage_path = temp_dir.name
+        recorder = BaseRecorder(
+            name,
+            storage_path,
+            [self.measurement_1, self.measurement_2],
+            3,
+        )
+        recorder._measure(**self.neural_state)
+        recorder._measure(**self.neural_state)
+        recorder._measure(**self.neural_state)
+        recorder.store()
+        recorder._measure(**self.neural_state)
+
+        data = recorder.gather()
+        assert set(data.keys()) == {"dummy_1", "dummy_2"}
+        assert_array_equal(data["dummy_1"], np.ones(shape=(4, 3, 10, 5)))
+        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(4, 3, 10)))
+        # Clear the temporary directory
+        temp_dir.cleanup()
+
+        # Test gather if only stored data is present
+        temp_dir = tempfile.TemporaryDirectory()
+        name = "test"
+        storage_path = temp_dir.name
+        recorder = BaseRecorder(
+            name,
+            storage_path,
+            [self.measurement_1, self.measurement_2],
+            3,
+        )
+        recorder._measure(**self.neural_state)
+        recorder._measure(**self.neural_state)
+        recorder._measure(**self.neural_state)
+        recorder.store()
+
+        data = recorder.gather()
+        assert set(data.keys()) == {"dummy_1", "dummy_2"}
+        assert_array_equal(data["dummy_1"], np.ones(shape=(3, 3, 10, 5)))
+        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(3, 3, 10)))
+        # Clear the temporary directory
+        temp_dir.cleanup()
+
+        # Test gather if only unstored data is present
+        temp_dir = tempfile.TemporaryDirectory()
+        name = "test"
+        storage_path = temp_dir.name
+        recorder = BaseRecorder(
+            name,
+            storage_path,
+            [self.measurement_1, self.measurement_2],
+            3,
+        )
+        recorder._measure(**self.neural_state)
+        recorder._measure(**self.neural_state)
+        recorder._measure(**self.neural_state)
+
+        data = recorder.gather()
+        assert set(data.keys()) == {"dummy_1", "dummy_2"}
+        assert_array_equal(data["dummy_1"], np.ones(shape=(3, 3, 10, 5)))
+        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(3, 3, 10)))
+        # Clear the temporary directory
+        temp_dir.cleanup()

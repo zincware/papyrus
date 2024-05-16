@@ -96,7 +96,7 @@ class BaseRecorder(ABC):
         self.neural_state_keys = self._read_neural_state_keys()
 
         # Temporary storage for results
-        self._init_results()
+        self._init_internals()
 
         # Initialize internal counter
         self._counter = 0
@@ -113,11 +113,13 @@ class BaseRecorder(ABC):
             neural_state_keys.extend(measurement.neural_state_keys)
         return list(set(neural_state_keys))
 
-    def _init_results(self):
+    def _init_internals(self):
         """
         Initialize the temporary storage for the results.
         """
         self._results = {measurement.name: [] for measurement in self.measurements}
+        # Reset the counter
+        self._counter = 0
 
     def _write(self, data: dict):
         """
@@ -198,9 +200,32 @@ class BaseRecorder(ABC):
             # Write the data back to the database
             self._write(data)
             # Reinitialize the temporary storage
-            self._init_results()
-            # Reset the counter
-            self._counter = 0
+            self._init_internals()
+
+    def gather(self):
+        """
+        Gather the results that can be stored in the database or are still in the
+        temporary storage.
+
+        Returns
+        -------
+        data : dict
+                The gathered data.
+        """
+        # Load the data from the database
+        try:
+            data = self.load()
+            if self._counter == 0:
+                return data
+            else:
+                # Append the new data
+                for key in self._results.keys():
+                    data[key] = np.append(data[key], self._results[key], axis=0)
+        # If the file does not exist, create a new one
+        except FileNotFoundError:
+            data = self._results
+
+        return data
 
     def record(self, neural_state: dict):
         """
