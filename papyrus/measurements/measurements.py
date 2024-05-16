@@ -296,6 +296,16 @@ class NTKTrace(BaseMeasurement):
         np.ndarray
             The trace of the NTK
         """
+        if ntk.shape[0] != ntk.shape[1]:
+            raise ValueError(
+                "To compute the trace of the NTK, the NTK matrix must"
+                f" be a square matrix, but got a matrix of shape {ntk.shape}."
+            )
+        if len(ntk.shape) != 2:
+            raise ValueError(
+                "To compute the trace of the NTK, the NTK matrix must"
+                f" be a tensor of rank 2, but got a tensor of rank {len(ntk.shape)}."
+            )
         return compute_trace(ntk, normalize=self.normalise)
 
 
@@ -363,11 +373,14 @@ class NTKEntropy(BaseMeasurement):
         """
         # Assert that the NTK is a square matrix
         if ntk.shape[0] != ntk.shape[1]:
-            raise ValueError("The NTK matrix must be a square matrix.")
+            raise ValueError(
+                "To compute the entropy of the NTK, the NTK matrix must"
+                f" be a square matrix, but got a matrix of shape {ntk.shape}."
+            )
         if len(ntk.shape) != 2:
             raise ValueError(
-                "The NTK matrix must be a tensor of rank 2, but got a tensor of rank"
-                f" {len(ntk.shape)}."
+                "To compute the entropy of the NTK, the NTK matrix must"
+                f" be a tensor of rank 2, but got a tensor of rank {len(ntk.shape)}."
             )
         # Compute the von Neumann entropy of the NTK
         return compute_von_neumann_entropy(
@@ -432,6 +445,16 @@ class NTKSelfEntropy(BaseMeasurement):
         np.ndarray
             Self-entropy of the NTK.
         """
+        if ntk.shape[0] != ntk.shape[1]:
+            raise ValueError(
+                "To compute the self-entropy of the NTK, the NTK matrix must"
+                f" be a square matrix, but got a matrix of shape {ntk.shape}."
+            )
+        if len(ntk.shape) != 2:
+            raise ValueError(
+                "To compute the self-entropy of the NTK, the NTK matrix must"
+                f" be a tensor of rank 2, but got a tensor of rank {len(ntk.shape)}."
+            )
         distribution = compute_grammian_diagonal_distribution(gram_matrix=ntk)
         return compute_shannon_entropy(distribution, effective=self.effective)
 
@@ -494,6 +517,16 @@ class NTKMagnitudeDistribution(BaseMeasurement):
         np.ndarray
             The magnitude distribution of the NTK
         """
+        if ntk.shape[0] != ntk.shape[1]:
+            raise ValueError(
+                "To compute the magnitude distribution of the NTK, the NTK matrix must"
+                f" be a square matrix, but got a matrix of shape {ntk.shape}."
+            )
+        if len(ntk.shape) != 2:
+            raise ValueError(
+                "To compute the magnitude distribution of the NTK, the NTK matrix must"
+                f" be a tensor of rank 2, but got a tensor of rank {len(ntk.shape)}."
+            )
         return compute_grammian_diagonal_distribution(gram_matrix=ntk)
 
 
@@ -559,6 +592,16 @@ class NTKEigenvalues(BaseMeasurement):
         np.ndarray
             The eigenvalues of the NTK
         """
+        if ntk.shape[0] != ntk.shape[1]:
+            raise ValueError(
+                "To compute the eigenvalues of the NTK, the NTK matrix must"
+                f" be a square matrix, but got a matrix of shape {ntk.shape}."
+            )
+        if len(ntk.shape) != 2:
+            raise ValueError(
+                "To compute the eigenvalues of the NTK, the NTK matrix must"
+                f" be a tensor of rank 2, but got a tensor of rank {len(ntk.shape)}."
+            )
         return compute_hermitian_eigensystem(ntk, normalize=self.normalize)[0]
 
 
