@@ -21,14 +21,13 @@ Summary
 -------
 """
 
-import os
+import tempfile
 
 import numpy as np
 from numpy.testing import assert_array_equal
 
 from papyrus.measurements import BaseMeasurement
 from papyrus.recorders import BaseRecorder
-import tempfile
 
 
 class DummyMeasurement1(BaseMeasurement):
@@ -322,3 +321,52 @@ class TestBaseRecorder:
         assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(3, 3, 10)))
         # Clear the temporary directory
         temp_dir.cleanup()
+
+    def test_overwrite(self):
+        """
+        Test the overwrite attribute of the BaseRecorder class.
+        """
+        # Create a temporary directory
+        temp_dir = tempfile.TemporaryDirectory()
+        name = "test"
+        storage_path = temp_dir.name
+        recorder = BaseRecorder(
+            name,
+            storage_path,
+            [self.measurement_1, self.measurement_2],
+            3,
+            overwrite=True,
+        )
+
+        # Measure and save data
+        recorder._measure(**self.neural_state)
+        recorder._write(recorder._results)
+        data = recorder.load()
+        assert set(data.keys()) == {"dummy_1", "dummy_2"}
+        assert_array_equal(data["dummy_1"], np.ones(shape=(1, 3, 10, 5)))
+        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(1, 3, 10)))
+
+        recorder = BaseRecorder(
+            name,
+            storage_path,
+            [self.measurement_1, self.measurement_2],
+            2,
+            overwrite=True,
+        )
+        data = recorder.load()
+        assert set(data.keys()) == {"dummy_1", "dummy_2"}
+        assert_array_equal(data["dummy_1"], [])
+        assert_array_equal(data["dummy_2"], [])
+
+        # Measure and save data again
+        recorder._measure(**self.neural_state)
+        # Should not store the data because the chunk size is 2
+        recorder.store()
+        recorder._measure(**self.neural_state)
+        # Should store the data now
+        recorder.store()
+        data = recorder.load()
+
+        assert set(data.keys()) == {"dummy_1", "dummy_2"}
+        assert_array_equal(data["dummy_1"], np.ones(shape=(2, 3, 10, 5)))
+        assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(2, 3, 10)))

@@ -98,8 +98,14 @@ class BaseRecorder(ABC):
         # Temporary storage for results
         self._init_internals()
 
-        # Initialize internal counter
-        self._counter = 0
+        # Check for existing data and overwrite if necessary
+        if self.overwrite:
+            try:
+                self.load()
+                # If overwrite is True, delete the existing data
+                self._write(self._results)
+            except FileNotFoundError:
+                pass
 
     def _read_neural_state_keys(self):
         """
