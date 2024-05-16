@@ -173,7 +173,7 @@ class BaseRecorder(ABC):
         # Increment the counter
         self._counter += 1
 
-    def _store(self):
+    def store(self):
         """
         Store the results of the measurements in the database.
 
@@ -221,4 +221,4 @@ class BaseRecorder(ABC):
                 The result of the recorder.
         """
         self._measure(**neural_state)
-        self._store()
+        self.store()

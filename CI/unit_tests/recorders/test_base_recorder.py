@@ -190,7 +190,7 @@ class TestBaseRecorder:
 
         # Test storing
         recorder._measure(**self.neural_state)
-        recorder._store()
+        recorder.store()
         data = recorder.load()
 
         assert set(data.keys()) == {"dummy_1", "dummy_2"}
@@ -199,7 +199,7 @@ class TestBaseRecorder:
 
         # Test storing again
         recorder._measure(**self.neural_state)
-        recorder._store()
+        recorder.store()
         data = recorder.load()
 
         assert set(data.keys()) == {"dummy_1", "dummy_2"}
@@ -211,7 +211,7 @@ class TestBaseRecorder:
         # test overwriting
         recorder.overwrite = True
         recorder._measure(**self.neural_state)
-        recorder._store()
+        recorder.store()
         data = recorder.load()
 
         assert set(data.keys()) == {"dummy_1", "dummy_2"}
@@ -243,11 +243,11 @@ class TestBaseRecorder:
         assert recorder._counter == 1
         recorder._measure(**self.neural_state)
         assert recorder._counter == 2
-        recorder._store()  # It should not story due to the chunk size
+        recorder.store()  # It should not story due to the chunk size
         assert recorder._counter == 2
         recorder._measure(**self.neural_state)
         assert recorder._counter == 3
-        recorder._store()  # It should store now
+        recorder.store()  # It should store now
         assert recorder._counter == 0
 
         # Delete temporary directory
