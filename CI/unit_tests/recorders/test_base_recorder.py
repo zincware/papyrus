@@ -185,12 +185,12 @@ class TestBaseRecorder:
             name,
             storage_path,
             [self.measurement_1, self.measurement_2],
-            10,
+            1,
         )
 
         # Test storing
         recorder._measure(**self.neural_state)
-        recorder._store(0)
+        recorder._store()
         data = recorder.load()
 
         assert set(data.keys()) == {"dummy_1", "dummy_2"}
@@ -199,11 +199,10 @@ class TestBaseRecorder:
 
         # Test storing again
         recorder._measure(**self.neural_state)
-        recorder._store(10)
+        recorder._store()
         data = recorder.load()
 
         assert set(data.keys()) == {"dummy_1", "dummy_2"}
-        print(data["dummy_1"].shape)
         assert_array_equal(data["dummy_1"], np.ones(shape=(2, 3, 10, 5)))
         assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(2, 3, 10)))
         # _results should be empty after storing
@@ -212,12 +211,44 @@ class TestBaseRecorder:
         # test overwriting
         recorder.overwrite = True
         recorder._measure(**self.neural_state)
-        recorder._store(20)
+        recorder._store()
         data = recorder.load()
 
         assert set(data.keys()) == {"dummy_1", "dummy_2"}
         assert_array_equal(data["dummy_1"], np.ones(shape=(1, 3, 10, 5)))
         assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(1, 3, 10)))
+
+        # Delete temporary directory
+        os.system("rm -r temp/")
+
+    def test_counter(self):
+        """
+        Test the counter attribute of the BaseRecorder class.
+        """
+        # Create a temporary directory
+        os.makedirs("temp/", exist_ok=True)
+
+        name = "test"
+        storage_path = "temp/"
+        recorder = BaseRecorder(
+            name,
+            storage_path,
+            [self.measurement_1, self.measurement_2],
+            3,
+        )
+
+        # Test counter
+        assert recorder._counter == 0
+        recorder._measure(**self.neural_state)
+        assert recorder._counter == 1
+        recorder._measure(**self.neural_state)
+        assert recorder._counter == 2
+        recorder._store()  # It should not story due to the chunk size
+        assert recorder._counter == 2
+        recorder._measure(**self.neural_state)
+        assert recorder._counter == 3
+        recorder._store()  # It should store now
+        assert recorder._counter == 0
 
         # Delete temporary directory
         os.system("rm -r temp/")

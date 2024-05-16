@@ -98,6 +98,9 @@ class BaseRecorder(ABC):
         # Temporary storage for results
         self._init_results()
 
+        # Initialize internal counter
+        self._counter = 0
+
     def _read_neural_state_keys(self):
         """
         Read the neural state keys from the measurements.
@@ -167,20 +170,18 @@ class BaseRecorder(ABC):
             # Store the result in the temporary storage
             self._results[measurement.name].append(result)
 
-    def _store(self, epoch: int):
+        # Increment the counter
+        self._counter += 1
+
+    def _store(self):
         """
         Store the results of the measurements in the database.
 
         This method loads and writes the data to the database in chunks.
 
         TODO: Change this method to use another type of storage.
-
-        Parameters
-        ----------
-        epoch : int
-                The epoch of recording.
         """
-        if epoch % self.chunk_size == 0:
+        if self._counter % self.chunk_size == 0:
             # Load the data from the database
             try:
                 data = self.load()
@@ -198,8 +199,10 @@ class BaseRecorder(ABC):
             self._write(data)
             # Reinitialize the temporary storage
             self._init_results()
+            # Reset the counter
+            self._counter = 0
 
-    def record(self, epoch: int, neural_state: dict):
+    def record(self, neural_state: dict):
         """
         Perform the recording of a neural state.
 
@@ -218,4 +221,4 @@ class BaseRecorder(ABC):
                 The result of the recorder.
         """
         self._measure(**neural_state)
-        self._store(epoch)
+        self._store()
