@@ -22,11 +22,10 @@ Summary
 papyrus measurements api.
 """
 
-from papyrus import measurements, neural_state, recorders, utils
+from papyrus import measurements, recorders, utils
 
 __all__ = [
     measurements.__name__,
     utils.__name__,
-    neural_state.__name__,
     recorders.__name__,
 ]
