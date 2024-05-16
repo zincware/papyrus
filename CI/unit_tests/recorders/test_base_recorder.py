@@ -242,11 +242,13 @@ class TestBaseRecorder:
         assert recorder._counter == 1
         recorder._measure(**self.neural_state)
         assert recorder._counter == 2
-        recorder.store()  # It should not story due to the chunk size
+        recorder.store(
+            ignore_chunk_size=False
+        )  # It should not story due to the chunk size
         assert recorder._counter == 2
         recorder._measure(**self.neural_state)
         assert recorder._counter == 3
-        recorder.store()  # It should store now
+        recorder.store(ignore_chunk_size=False)  # It should store now
         assert recorder._counter == 0
 
         # Delete temporary directory
@@ -361,10 +363,10 @@ class TestBaseRecorder:
         # Measure and save data again
         recorder._measure(**self.neural_state)
         # Should not store the data because the chunk size is 2
-        recorder.store()
+        recorder.store(ignore_chunk_size=False)
         recorder._measure(**self.neural_state)
         # Should store the data now
-        recorder.store()
+        recorder.store(ignore_chunk_size=False)
         data = recorder.load()
 
         assert set(data.keys()) == {"dummy_1", "dummy_2"}

@@ -181,7 +181,7 @@ class BaseRecorder(ABC):
         # Increment the counter
         self._counter += 1
 
-    def store(self):
+    def store(self, ignore_chunk_size=True):
         """
         Store the results of the measurements in the database.
 
@@ -189,7 +189,7 @@ class BaseRecorder(ABC):
 
         TODO: Change this method to use another type of storage.
         """
-        if self._counter % self.chunk_size == 0:
+        if self._counter % self.chunk_size == 0 or ignore_chunk_size:
             # Load the data from the database
             try:
                 data = self.load()
@@ -252,4 +252,4 @@ class BaseRecorder(ABC):
                 The result of the recorder.
         """
         self._measure(**neural_state)
-        self.store()
+        self.store(ignore_chunk_size=False)
