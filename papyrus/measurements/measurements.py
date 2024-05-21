@@ -641,3 +641,64 @@ class NTK(BaseMeasurement):
             The Neural Tangent Kernel (NTK) matrix.
         """
         return ntk
+
+
+class LossDerivative(BaseMeasurement):
+    """
+    Measurement class to record the derivative of the loss with respect to the neural
+    network outputs.
+
+    Neural State Keys
+    -----------------
+    loss_derivative : np.ndarray
+            The derivative of the loss with respect to the weights.
+    """
+
+    def __init__(
+        self,
+        apply_fn: Callable,
+        name: str = "loss_derivative",
+        rank: int = 1,
+        public: bool = False,
+    ):
+        """
+        Constructor method of the LossDerivative class.
+
+        Parameters
+        ----------
+        apply_fn : Callable
+                The function to compute the derivative of the loss with respect to the
+                neural network outputs.
+        name : str (default="loss_derivative")
+                The name of the measurement, defining how the instance in the database
+                will be identified.
+        rank : int (default=1)
+                The rank of the measurement, defining the tensor order of the
+                measurement.
+        public : bool (default=False)
+                Boolean flag to indicate whether the measurement resutls will be
+                accessible via a public attribute of the recorder.
+        """
+        super().__init__(name, rank, public)
+        self.apply_fn = apply_fn
+
+    def apply(self, predictions: np.ndarray, targets: np.ndarray) -> np.ndarray:
+        """
+        Method to record the derivative of the loss with respect to the neural network
+        outputs.
+
+        Parameters need to be provided as keyword arguments.
+
+        Parameters
+        ----------
+        predictions : np.ndarray
+                The predictions of the neural network.
+        targets : np.ndarray
+                The target values of the neural network.
+
+        Returns
+        -------
+        np.ndarray
+            The derivative of the loss with respect to the neural network outputs.
+        """
+        return self.apply_fn(predictions, targets)
