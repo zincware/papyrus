@@ -50,16 +50,13 @@ class BaseMeasurement(ABC):
             be identified.
     rank : int
             The rank of the measurement, defining the tensor order of the measurement.
-    public : bool
-            Boolean flag to indicate whether the measurement resutls will be accessible
-            via a public attribute of the recorder.
     neural_state_keys : List[str]
             The keys of the neural state that the measurement takes as input.
             A neural state is a dictionary of numpy arrays that represent the state of
             a neural network. The keys are the names of the kwargs of the apply method.
     """
 
-    def __init__(self, name: str, rank: int, public: bool = False):
+    def __init__(self, name: str, rank: int):
         """
         Constructor method of the BaseMeasurement class.
 
@@ -69,14 +66,9 @@ class BaseMeasurement(ABC):
         rank : int
                 The rank of the measurement, defining the tensor order of the
                 measurement.
-        public : bool
-                Boolean flag to indicate whether the measurement resutls will be
-                accessible via a public attribute of the recorder.
         """
         self.name = name
-        # self.takes_states = takes_states
         self.rank = rank
-        self.public = public
 
         if not isinstance(self.rank, int) or self.rank < 0:
             raise ValueError("Rank must be a positive integer.")

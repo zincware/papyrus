@@ -59,7 +59,6 @@ class Loss(BaseMeasurement):
         self,
         name: str = "loss",
         rank: int = 0,
-        public: bool = False,
         apply_fn: Optional[Callable] = None,
     ):
         """
@@ -73,9 +72,6 @@ class Loss(BaseMeasurement):
         rank : int (default=0)
                 The rank of the measurement, defining the tensor order of the
                 measurement.
-        public : bool (default=False)
-                Boolean flag to indicate whether the measurement resutls will be
-                accessible via a public attribute of the recorder.
         apply_fn : Optional[Callable] (default=None)
                 The loss function to be used to compute the loss of the neural network.
                 If the loss function is not provided, the apply method will assume that
@@ -83,7 +79,7 @@ class Loss(BaseMeasurement):
                 If the loss function is provided, the apply method will assume that the
                 neural network outputs and the target values are used as inputs.
         """
-        super().__init__(name, rank, public)
+        super().__init__(name, rank)
         self.apply_fn = apply_fn
 
     def apply(
@@ -163,9 +159,6 @@ class Accuracy(BaseMeasurement):
         rank : int (default=0)
                 The rank of the measurement, defining the tensor order of the
                 measurement.
-        public : bool (default=False)
-                Boolean flag to indicate whether the measurement resutls will be
-                accessible via a public attribute of the recorder.
         apply_fn : Optional[Callable] (default=None)
                 The accuracy function to be used to compute the accuracy of the neural
                 network.
@@ -174,7 +167,7 @@ class Accuracy(BaseMeasurement):
                 If the accuracy function is provided, the apply method will assume that
                 the neural network outputs and the target values are used as inputs.
         """
-        super().__init__(name, rank, public)
+        super().__init__(name, rank)
         self.apply_fn = apply_fn
 
     def apply(
@@ -234,7 +227,6 @@ class NTKTrace(BaseMeasurement):
         self,
         name: str = "ntk_trace",
         rank: int = 1,
-        public: bool = False,
         normalize: bool = True,
     ):
         """
@@ -255,7 +247,7 @@ class NTKTrace(BaseMeasurement):
                 Boolean flag to indicate whether the trace of the NTK will be normalized
                 by the size of the NTK matrix.
         """
-        super().__init__(name, rank, public)
+        super().__init__(name, rank)
         self.normalise = normalize
 
     def apply(self, ntk: np.ndarray) -> np.ndarray:
@@ -299,7 +291,6 @@ class NTKEntropy(BaseMeasurement):
         self,
         name: str = "ntk_cross_entropy",
         rank: int = 1,
-        public: bool = False,
         normalize_eigenvalues: bool = True,
         effective: bool = False,
     ):
@@ -314,9 +305,6 @@ class NTKEntropy(BaseMeasurement):
         rank : int (default=1)
                 The rank of the measurement, defining the tensor order of the
                 measurement.
-        public : bool (default=False)
-                Boolean flag to indicate whether the measurement resutls will be
-                accessible via a public attribute of the recorder.
         normalize_eigenvalues : bool (default=True)
                 If true, the eigenvalues are scaled to look like probabilities.
         effective : bool (default=False)
@@ -324,7 +312,7 @@ class NTKEntropy(BaseMeasurement):
                 the system thereby returning the effective entropy / entropy density.
 
         """
-        super().__init__(name=name, rank=rank, public=public)
+        super().__init__(name=name, rank=rank)
         self.normalize_eigenvalues = normalize_eigenvalues
         self.effective = effective
 
@@ -383,7 +371,6 @@ class NTKSelfEntropy(BaseMeasurement):
         self,
         name: str = "ntk_self_entropy",
         rank: int = 0,
-        public: bool = False,
         effective: bool = False,
     ):
         """
@@ -397,14 +384,11 @@ class NTKSelfEntropy(BaseMeasurement):
         rank : int (default=1)
                 The rank of the measurement, defining the tensor order of the
                 measurement.
-        public : bool (default=False)
-                Boolean flag to indicate whether the measurement resutls will be
-                accessible via a public attribute of the recorder.
         effective : bool (default=False)
                 Boolean flag to indicate whether the self-entropy of the NTK will be
                 normalized by the theoretical maximum entropy of the system.
         """
-        super().__init__(name, rank, public)
+        super().__init__(name, rank)
         self.effective = effective
 
     def apply(self, ntk: np.ndarray) -> np.ndarray:
@@ -460,7 +444,6 @@ class NTKMagnitudeDistribution(BaseMeasurement):
         self,
         name: str = "ntk_magnitude_distribution",
         rank: int = 0,
-        public: bool = False,
     ):
         """
         Constructor method of the NTKMagnitudeDistribution class.
@@ -477,7 +460,7 @@ class NTKMagnitudeDistribution(BaseMeasurement):
                 Boolean flag to indicate whether the measurement resutls will be
                 accessible via a public attribute of the recorder.
         """
-        super().__init__(name, rank, public)
+        super().__init__(name, rank)
 
     def apply(self, ntk: np.ndarray) -> np.ndarray:
         """
@@ -530,7 +513,6 @@ class NTKEigenvalues(BaseMeasurement):
         self,
         name: str = "ntk_eigenvalues",
         rank: int = 1,
-        public: bool = False,
         normalize: bool = True,
     ):
         """
@@ -544,14 +526,11 @@ class NTKEigenvalues(BaseMeasurement):
         rank : int (default=1)
                 The rank of the measurement, defining the tensor order of the
                 measurement.
-        public : bool (default=False)
-                Boolean flag to indicate whether the measurement resutls will be
-                accessible via a public attribute of the recorder.
         normalize : bool (default=True)
                 Boolean flag to indicate whether the eigenvalues of the NTK will be
                 normalized by the size of the NTK matrix.
         """
-        super().__init__(name, rank, public)
+        super().__init__(name, rank)
         self.normalize = normalize
 
     def apply(self, ntk: np.ndarray) -> np.ndarray:
@@ -605,7 +584,6 @@ class NTK(BaseMeasurement):
         self,
         name: str = "ntk",
         rank: int = 2,
-        public: bool = False,
     ):
         """
         Constructor method of the NTK class.
@@ -618,11 +596,8 @@ class NTK(BaseMeasurement):
         rank : int (default=2)
                 The rank of the measurement, defining the tensor order of the
                 measurement.
-        public : bool (default=False)
-                Boolean flag to indicate whether the measurement resutls will be
-                accessible via a public attribute of the recorder.
         """
-        super().__init__(name, rank, public)
+        super().__init__(name, rank)
 
     def apply(self, ntk: np.ndarray) -> np.ndarray:
         """
