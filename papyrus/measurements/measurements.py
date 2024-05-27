@@ -634,7 +634,6 @@ class LossDerivative(BaseMeasurement):
         apply_fn: Callable,
         name: str = "loss_derivative",
         rank: int = 1,
-        public: bool = False,
     ):
         """
         Constructor method of the LossDerivative class.
@@ -650,11 +649,8 @@ class LossDerivative(BaseMeasurement):
         rank : int (default=1)
                 The rank of the measurement, defining the tensor order of the
                 measurement.
-        public : bool (default=False)
-                Boolean flag to indicate whether the measurement resutls will be
-                accessible via a public attribute of the recorder.
         """
-        super().__init__(name, rank, public)
+        super().__init__(name, rank)
         self.apply_fn = apply_fn
 
     def apply(self, predictions: np.ndarray, targets: np.ndarray) -> np.ndarray:
