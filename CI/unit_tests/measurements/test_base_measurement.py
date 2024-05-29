@@ -36,8 +36,8 @@ class DummyMeasurement(BaseMeasurement):
     Dummy measurement class for testing.
     """
 
-    def __init__(self, name: str, rank: int, public: bool = False):
-        super().__init__(name, rank, public)
+    def __init__(self, name: str, rank: int):
+        super().__init__(name, rank)
 
     def apply(
         self, a: np.ndarray, b: np.ndarray, c: Optional[np.ndarray] = None
@@ -59,15 +59,13 @@ class TestBaseMeasurement:
         # Test the constructor method
         name = "test"
         rank = 1
-        public = False
-        measurement = BaseMeasurement(name, rank, public)
+        measurement = BaseMeasurement(name, rank)
         assert measurement.name == name
         assert measurement.rank == rank
-        assert measurement.public == public
 
         # Test the rank parameter
         with pytest.raises(ValueError):
-            BaseMeasurement(name, -1, public)
+            BaseMeasurement(name, -1)
 
     def test_call(self):
         """
@@ -76,8 +74,7 @@ class TestBaseMeasurement:
         # Test the call method
         name = "test"
         rank = 1
-        public = False
-        measurement = BaseMeasurement(name, rank, public)
+        measurement = BaseMeasurement(name, rank)
 
         # Test the apply method
         with pytest.raises(NotImplementedError):
@@ -89,7 +86,7 @@ class TestBaseMeasurement:
         c = np.array([[9, 10], [11, 12]])
 
         # Test the call method with only arguments
-        measurement = DummyMeasurement(name, rank, public)
+        measurement = DummyMeasurement(name, rank)
         result = measurement(a, b)
         assert np.allclose(result, a + b)
         result = measurement(a, b, c)
