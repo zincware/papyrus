@@ -26,12 +26,12 @@ from papyrus.measurements.measurements import (
     NTK,
     Accuracy,
     Loss,
+    LossDerivative,
     NTKEigenvalues,
     NTKEntropy,
     NTKMagnitudeDistribution,
     NTKSelfEntropy,
     NTKTrace,
-    LossDerivative,
 )
 
 __all__ = [

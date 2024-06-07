@@ -22,5 +22,6 @@ Summary
 """
 
 from papyrus.recorders.base_recorder import BaseRecorder
+from papyrus.recorders.data_storage import DataStorage
 
-__all__ = [BaseRecorder.__name__]
+__all__ = [BaseRecorder.__name__, DataStorage.__name__]

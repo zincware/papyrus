@@ -28,6 +28,7 @@ from typing import List
 import numpy as np
 
 from papyrus.measurements.base_measurement import BaseMeasurement
+from papyrus.recorders.data_storage import DataStorage
 
 
 class BaseRecorder(ABC):
@@ -92,6 +93,9 @@ class BaseRecorder(ABC):
         self.chunk_size = chunk_size
         self.overwrite = overwrite
 
+        # Initialize the data storage
+        self._data_storage = DataStorage(self.storage_path + self.name)
+
         # Read in neural state keys from measurements
         self.neural_state_keys = self._read_neural_state_keys()
 
@@ -103,7 +107,7 @@ class BaseRecorder(ABC):
             try:
                 self.load()
                 # If overwrite is True, delete the existing data
-                self._write(self._results)
+                self._data_storage.write(self._results)
             except FileNotFoundError:
                 pass
 
@@ -127,19 +131,6 @@ class BaseRecorder(ABC):
         # Reset the counter
         self._counter = 0
 
-    def _write(self, data: dict):
-        """
-        Write data to the database using np.savez
-
-        TODO: Change this method to use another type of storage.
-
-        Parameters
-        ----------
-        data : dict
-                The data to be written to the database.
-        """
-        np.savez(self.storage_path + self.name, **data)
-
     def load(self):
         """
         Load the data from the database using np.load.
@@ -151,9 +142,7 @@ class BaseRecorder(ABC):
         data : dict
                 The data loaded from the database.
         """
-        # By combining storage path and name, we can load the data
-        data = np.load(self.storage_path + self.name + ".npz")
-        return dict(data)
+        return self._data_storage.load(self._results.keys())
 
     def _measure(self, **neural_state):
         """
@@ -190,16 +179,16 @@ class BaseRecorder(ABC):
         TODO: Change this method to use another type of storage.
         """
         if self._counter % self.chunk_size == 0 or ignore_chunk_size:
-            # Gather the data
-            data = self.gather()
             # Write the data back to the database
-            self._write(data)
+            self._data_storage.write(self._results)
             # Reinitialize the temporary storage
             self._init_internals()
 
     def gather(self):
         """
         Gather the results from the temporary storage and the database.
+
+        TODO: Change this method to use another type of storage.
 
         Returns
         -------
