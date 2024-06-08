@@ -94,7 +94,7 @@ class BaseRecorder(ABC):
         self.overwrite = overwrite
 
         # Initialize the data storage
-        self._data_storage = DataStorage(self.storage_path + self.name)
+        self._data_storage = DataStorage(f"{self.storage_path}/{self.name}")
 
         # Read in neural state keys from measurements
         self.neural_state_keys = self._read_neural_state_keys()
@@ -183,7 +183,7 @@ class BaseRecorder(ABC):
     def gather(self):
         """
         Gather the results from the temporary storage and the database.
-        
+
         Returns
         -------
         data : dict

@@ -110,7 +110,7 @@ class TestBaseRecorder:
         assert recorder.measurements == [self.measurement_1, self.measurement_2]
         assert recorder.chunk_size == 10
         assert recorder.overwrite is False
-        assert recorder._data_storage.database_path == f"{storage_path}{name}.h5"
+        assert recorder._data_storage.database_path == f"{storage_path}/{name}.h5"
 
     def test_neural_state_keys(self):
         """
