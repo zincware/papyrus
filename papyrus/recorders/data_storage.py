@@ -78,22 +78,6 @@ class DataStorage:
         with hf.File(self.database_path, "a") as db:
             del db[data_group]
 
-    def clear_dataset(self, data_group: str):
-        """
-        Clear a dataset.
-
-        Parameters
-        ----------
-        data_group : str
-                Group to clear.
-
-        Returns
-        -------
-        Clears a dataset.
-        """
-        with hf.File(self.database_path, "a") as db:
-            db[data_group][:] = np.zeros_like(db[data_group][:1])
-
     def read_keys(self):
         """
         Read the keys in the database.
