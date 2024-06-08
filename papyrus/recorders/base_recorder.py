@@ -135,8 +135,6 @@ class BaseRecorder(ABC):
         """
         Load the data from the database using np.load.
 
-        TODO: Change this method to use another type of storage.
-
         Returns
         -------
         data : dict
@@ -175,8 +173,6 @@ class BaseRecorder(ABC):
         Store the results of the measurements in the database.
 
         This method loads and writes the data to the database in chunks.
-
-        TODO: Change this method to use another type of storage.
         """
         if self._counter % self.chunk_size == 0 or ignore_chunk_size:
             # Write the data back to the database
@@ -187,9 +183,7 @@ class BaseRecorder(ABC):
     def gather(self):
         """
         Gather the results from the temporary storage and the database.
-
-        TODO: Change this method to use another type of storage.
-
+        
         Returns
         -------
         data : dict
