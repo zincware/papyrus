@@ -105,9 +105,9 @@ class BaseRecorder(ABC):
         # Check for existing data and overwrite if necessary
         if self.overwrite:
             try:
-                self.load()
-                # If overwrite is True, delete the existing data
-                self._data_storage.write(self._results)
+                keys = self._data_storage.read_keys()
+                for key in keys:
+                    self._data_storage.del_dataset(key)
             except FileNotFoundError:
                 pass
 

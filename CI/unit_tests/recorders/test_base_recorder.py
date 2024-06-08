@@ -24,7 +24,7 @@ Summary
 import tempfile
 
 import numpy as np
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_raises
 
 from papyrus.measurements import BaseMeasurement
 from papyrus.recorders import BaseRecorder
@@ -149,30 +149,6 @@ class TestBaseRecorder:
             recorder._results["dummy_1"], 1 * np.ones(shape=(2, 3, 10, 5))
         )
         assert_array_equal(recorder._results["dummy_2"], 10 * np.ones(shape=(2, 3, 10)))
-
-    # def test_write_read(self):
-    #     """
-    #     Test the write and read methods of the BaseRecorder class.
-    #     """
-    #     # Create a temporary directory
-    #     temp_dir = tempfile.TemporaryDirectory()
-    #     name = "test"
-    #     storage_path = temp_dir.name
-    #     recorder = BaseRecorder(
-    #         name, storage_path, [self.measurement_1, self.measurement_2], 10
-    #     )
-
-    #     # Test writing and reading
-    #     recorder._measure(**self.neural_state)
-    #     recorder._write(recorder._results)
-    #     data = recorder.load()
-
-    #     assert set(data.keys()) == {"dummy_1", "dummy_2"}
-    #     assert_array_equal(data["dummy_1"], np.ones(shape=(1, 3, 10, 5)))
-    #     assert_array_equal(data["dummy_2"], 10 * np.ones(shape=(1, 3, 10)))
-
-    #     # Delete temporary directory
-    #     temp_dir.cleanup()
 
     def test_store(self):
         """
@@ -356,11 +332,7 @@ class TestBaseRecorder:
             2,
             overwrite=True,
         )
-        data = recorder.load()
-        print(data)
-        assert set(data.keys()) == {"dummy_1", "dummy_2"}
-        assert_array_equal(data["dummy_1"], [])
-        assert_array_equal(data["dummy_2"], [])
+        assert_raises(KeyError, recorder.load)
 
         # Measure and save data again
         recorder._measure(**self.neural_state)
@@ -379,4 +351,42 @@ class TestBaseRecorder:
         """
         Test the order of the recordings.
         """
-        pass
+        # Create a temporary directory
+        temp_dir = tempfile.TemporaryDirectory()
+        name = "test"
+        storage_path = temp_dir.name
+        recorder = BaseRecorder(
+            name,
+            storage_path,
+            [self.measurement_1, self.measurement_2],
+            3,
+        )
+
+        # Prepare distinct neural states
+        neural_state_1 = {
+            "a": np.ones(shape=(3, 10, 5)),
+            "b": np.ones(shape=(3, 10, 5)),
+            "c": np.ones(shape=(3, 10, 5)),
+        }
+        neural_state_2 = {k: v * 2 for k, v in neural_state_1.items()}
+        neural_state_3 = {k: v * 3 for k, v in neural_state_1.items()}
+
+        # Measure and store data
+        recorder._measure(**neural_state_1)
+        recorder.store()
+        recorder._measure(**neural_state_2)
+        recorder.store()
+        recorder._measure(**neural_state_3)
+        recorder.store()
+
+        # Gather data
+        data = recorder.gather()
+        print(data)
+
+        # Check the order of the recordings
+        assert_array_equal(data["dummy_1"][0], 2 * np.ones(shape=(3, 10, 5)))
+        assert_array_equal(data["dummy_1"][1], 4 * np.ones(shape=(3, 10, 5)))
+        assert_array_equal(data["dummy_1"][2], 6 * np.ones(shape=(3, 10, 5)))
+
+        # Clear the temporary directory
+        temp_dir.cleanup()

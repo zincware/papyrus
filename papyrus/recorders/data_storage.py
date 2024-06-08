@@ -62,6 +62,49 @@ class DataStorage:
             current_size = len(db[_data_group])
             db[_data_group].resize(int(_chunk_size + current_size), axis=0)
 
+    def del_dataset(self, data_group: str):
+        """
+        Delete a dataset.
+
+        Parameters
+        ----------
+        data_group : str
+                Group to delete.
+
+        Returns
+        -------
+        Deletes a dataset.
+        """
+        with hf.File(self.database_path, "a") as db:
+            del db[data_group]
+
+    def clear_dataset(self, data_group: str):
+        """
+        Clear a dataset.
+
+        Parameters
+        ----------
+        data_group : str
+                Group to clear.
+
+        Returns
+        -------
+        Clears a dataset.
+        """
+        with hf.File(self.database_path, "a") as db:
+            db[data_group][:] = np.zeros_like(db[data_group][:1])
+
+    def read_keys(self):
+        """
+        Read the keys in the database.
+
+        Returns
+        -------
+        Returns the keys in the database.
+        """
+        with hf.File(self.database_path, "r") as db:
+            return [key for key in db.keys()]
+
     def _write_to_dataset(self, data_group: str, data: np.ndarray):
         """
         Write a numpy array to a dataset.
