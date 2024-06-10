@@ -26,6 +26,7 @@ from papyrus.measurements.measurements import (
     NTK,
     Accuracy,
     Loss,
+    LossDerivative,
     NTKEigenvalues,
     NTKEntropy,
     NTKMagnitudeDistribution,
@@ -43,4 +44,5 @@ __all__ = [
     Loss.__name__,
     Accuracy.__name__,
     NTK.__name__,
+    LossDerivative.__name__,
 ]

@@ -21,10 +21,7 @@ Summary
 -------
 """
 
-from papyrus.neural_state.neural_state import NeuralState
-from papyrus.neural_state.neural_state_creator import NeuralStateCreator
+from papyrus.recorders.base_recorder import BaseRecorder
+from papyrus.recorders.data_storage import DataStorage
 
-__all__ = [
-    NeuralState.__name__,
-    NeuralStateCreator.__name__,
-]
+__all__ = [BaseRecorder.__name__, DataStorage.__name__]
