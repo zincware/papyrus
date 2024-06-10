@@ -31,9 +31,9 @@ from papyrus.utils import (
 )
 
 
-class TestMatrixUtils:
+class TestAnalysisUtils:
     """
-    Test suite for the matrix utils.
+    Test suite for the analysis utils.
     """
 
     def test_compute_trace(self):
