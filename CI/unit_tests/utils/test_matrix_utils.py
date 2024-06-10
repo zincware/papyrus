@@ -137,7 +137,6 @@ class TestMatrixUtils:
             np.diagonal(normalized_matrix), np.array([0.0, 1.0, 1.0, 1.0])
         )
         # Test 1st row
-        print(normalized_matrix)
         assert_array_almost_equal(normalized_matrix[0], np.zeros(4))
         assert_array_almost_equal(normalized_matrix[:, 0], np.zeros(4))
 
