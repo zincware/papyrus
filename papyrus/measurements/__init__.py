@@ -19,13 +19,28 @@ web: https://zincwarecode.com/
 
 Summary
 -------
-papyrus measurements api.
 """
 
-from papyrus import measurements, neural_state, utils
+from papyrus.measurements.base_measurement import BaseMeasurement
+from papyrus.measurements.measurements import (
+    NTK,
+    Accuracy,
+    Loss,
+    NTKEigenvalues,
+    NTKEntropy,
+    NTKMagnitudeDistribution,
+    NTKSelfEntropy,
+    NTKTrace,
+)
 
 __all__ = [
-    measurements.__name__,
-    utils.__name__,
-    neural_state.__name__,
+    BaseMeasurement.__name__,
+    NTKTrace.__name__,
+    NTKEntropy.__name__,
+    NTKSelfEntropy.__name__,
+    NTKEigenvalues.__name__,
+    NTKMagnitudeDistribution.__name__,
+    Loss.__name__,
+    Accuracy.__name__,
+    NTK.__name__,
 ]

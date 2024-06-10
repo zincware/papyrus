@@ -19,13 +19,12 @@ web: https://zincwarecode.com/
 
 Summary
 -------
-papyrus measurements api.
 """
 
-from papyrus import measurements, neural_state, utils
+from papyrus.neural_state.neural_state import NeuralState
+from papyrus.neural_state.neural_state_creator import NeuralStateCreator
 
 __all__ = [
-    measurements.__name__,
-    utils.__name__,
-    neural_state.__name__,
+    NeuralState.__name__,
+    NeuralStateCreator.__name__,
 ]
