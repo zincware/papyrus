@@ -25,7 +25,7 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_raises
 
 from papyrus.utils import (
-    compute_grammian_diagonal_distribution,
+    compute_gramian_diagonal_distribution,
     compute_hermitian_eigensystem,
     compute_l_pq_norm,
     flatten_rank_4_tensor,
@@ -140,9 +140,9 @@ class TestMatrixUtils:
         assert_array_almost_equal(normalized_matrix[0], np.zeros(4))
         assert_array_almost_equal(normalized_matrix[:, 0], np.zeros(4))
 
-    def test_compute_grammian_diagonal_distribution(self):
+    def test_compute_gramian_diagonal_distribution(self):
         """
-        Test the computation of the grammian diagonal distribution.
+        Test the computation of the gramian diagonal distribution.
 
         The test is done in the following steps:
             - Compute a gram matrix
@@ -158,7 +158,7 @@ class TestMatrixUtils:
         array_norm_density = array_norm / array_norm.sum()
 
         # Evaluate the magnitude density with the function that is to be tested
-        mag_density = compute_grammian_diagonal_distribution(matrix)
+        mag_density = compute_gramian_diagonal_distribution(matrix)
         assert_array_almost_equal(array_norm_density, mag_density)
 
     def test_compute_l_pq_norm(self):

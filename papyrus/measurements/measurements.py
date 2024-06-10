@@ -33,7 +33,7 @@ from papyrus.utils.analysis_utils import (
     compute_von_neumann_entropy,
 )
 from papyrus.utils.matrix_utils import (
-    compute_grammian_diagonal_distribution,
+    compute_gramian_diagonal_distribution,
     compute_hermitian_eigensystem,
 )
 
@@ -415,7 +415,7 @@ class NTKSelfEntropy(BaseMeasurement):
                 "To compute the self-entropy of the NTK, the NTK matrix must"
                 f" be a tensor of rank 2, but got a tensor of rank {len(ntk.shape)}."
             )
-        distribution = compute_grammian_diagonal_distribution(gram_matrix=ntk)
+        distribution = compute_gramian_diagonal_distribution(gram_matrix=ntk)
         return compute_shannon_entropy(distribution, effective=self.effective)
 
 
@@ -486,7 +486,7 @@ class NTKMagnitudeDistribution(BaseMeasurement):
                 "To compute the magnitude distribution of the NTK, the NTK matrix must"
                 f" be a tensor of rank 2, but got a tensor of rank {len(ntk.shape)}."
             )
-        return compute_grammian_diagonal_distribution(gram_matrix=ntk)
+        return compute_gramian_diagonal_distribution(gram_matrix=ntk)
 
 
 class NTKEigenvalues(BaseMeasurement):

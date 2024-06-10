@@ -103,7 +103,7 @@ def normalize_gram_matrix(gram_matrix: np.ndarray):
     return gram_matrix * normalizing_matrix
 
 
-def compute_grammian_diagonal_distribution(gram_matrix: np.ndarray) -> np.ndarray:
+def compute_gramian_diagonal_distribution(gram_matrix: np.ndarray) -> np.ndarray:
     """
     Compute the normalized distribution of the diagonals of a gram matrix.
 
