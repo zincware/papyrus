@@ -315,6 +315,7 @@ class NTKEntropy(BaseMeasurement):
         rank: int = 1,
         normalize_eigenvalues: bool = True,
         effective: bool = False,
+        normalize_matrix: bool = False,
     ):
         """
         Constructor method of the NTKCrossEntropy class.
@@ -332,11 +333,15 @@ class NTKEntropy(BaseMeasurement):
         effective : bool (default=False)
                 If true, the entropy is divided by the theoretical maximum entropy of
                 the system thereby returning the effective entropy / entropy density.
-
+        normalize_matrix : bool (default=False)
+                If true, the NTK is normalized by the square root of the product of the
+                corresponding diagonal elements. This is equivalent to normalizing the
+                gradient vectors forming the NTK.
         """
         super().__init__(name=name, rank=rank)
         self.normalize_eigenvalues = normalize_eigenvalues
         self.effective = effective
+        self.normalize_matrix = normalize_matrix
 
     def apply(self, ntk: np.ndarray) -> np.ndarray:
         """
@@ -373,6 +378,7 @@ class NTKEntropy(BaseMeasurement):
             ntk,
             effective=self.effective,
             normalize_eig=self.normalize_eigenvalues,
+            normalize_matrix=self.normalize_matrix,
         )
 
 

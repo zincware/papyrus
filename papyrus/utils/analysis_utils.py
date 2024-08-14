@@ -23,7 +23,10 @@ Summary
 
 import numpy as np
 
-from papyrus.utils.matrix_utils import compute_hermitian_eigensystem
+from papyrus.utils.matrix_utils import (
+    compute_hermitian_eigensystem,
+    normalize_gram_matrix,
+)
 
 
 def compute_trace(matrix: np.ndarray, normalize: bool = False) -> np.ndarray:
@@ -77,7 +80,10 @@ def compute_shannon_entropy(dist: np.ndarray, effective: bool = False) -> float:
 
 
 def compute_von_neumann_entropy(
-    matrix: np.ndarray, effective: bool = True, normalize_eig: bool = True
+    matrix: np.ndarray,
+    effective: bool = True,
+    normalize_eig: bool = True,
+    normalize_matrix: bool = False,
 ) -> float:
     """
     Compute the von-Neumann entropy of a matrix.
@@ -91,12 +97,19 @@ def compute_von_neumann_entropy(
             the system thereby returning the effective entropy.
     normalize_eig : bool (default = True)
             If true, the eigenvalues are scaled to look like probabilities.
+    normalize_matrix : bool (default=False)
+            If true, the NTK is normalized by the square root of the product of the
+            corresponding diagonal elements. This is equivalent to normalizing the
+            gradient vectors forming the NTK.
 
     Returns
     -------
     entropy : float
             Von-Neumann entropy of the matrix.
     """
+    if normalize_matrix:
+        matrix = normalize_gram_matrix(matrix)
+
     eigvals, _ = compute_hermitian_eigensystem(matrix, normalize=normalize_eig)
 
     entropy = compute_shannon_entropy(eigvals)
