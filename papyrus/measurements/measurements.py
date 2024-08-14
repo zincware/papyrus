@@ -35,6 +35,9 @@ from papyrus.utils.analysis_utils import (
 from papyrus.utils.matrix_utils import (
     compute_gramian_diagonal_distribution,
     compute_hermitian_eigensystem,
+    compute_matrix_alignment,
+    compute_vector_outer_product,
+    flatten_rank_4_tensor,
 )
 
 
@@ -701,3 +704,147 @@ class LossDerivative(BaseMeasurement):
             The derivative of the loss with respect to the neural network outputs.
         """
         return self.apply_fn(predictions, targets)
+
+
+class LabelNTKAlignment(BaseMeasurement):
+    """
+    Measurement class to record the alignment of the labels with the NTK.
+
+    Neural State Keys
+    -----------------
+    ntk : np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
+    labels : np.ndarray
+            The labels of the neural network.
+    """
+
+    def __init__(
+        self,
+        name: str = "label_ntk_alignment",
+        rank: int = 0,
+    ):
+        """
+        Constructor method of the LabelNTKAlignment class.
+
+        Parameters
+        ----------
+        name : str (default="label_ntk_alignment")
+                The name of the measurement, defining how the instance in the database
+                will be identified.
+        rank : int (default=0)
+                The rank of the measurement, defining the tensor order of the
+                measurement.
+        """
+        super().__init__(name, rank)
+
+    def apply(self, ntk: np.ndarray, targets: np.ndarray) -> np.ndarray:
+        """
+        Method to record the alignment of the labels with the NTK.
+
+        Parameters need to be provided as keyword arguments.
+
+        Parameters
+        ----------
+        ntk : np.ndarray
+                The Neural Tangent Kernel (NTK) matrix.
+        targets : np.ndarray
+                The target values of the neural network.
+
+        Returns
+        -------
+        np.ndarray
+            The alignment of the labels with the NTK.
+        """
+        # Assert that the NTK is a square matrix
+        if ntk.shape[0] != ntk.shape[1]:
+            raise ValueError(
+                "To compute the self-entropy of the NTK, the NTK matrix must"
+                f" be a square matrix, but got a matrix of shape {ntk.shape}."
+            )
+        if len(ntk.shape) != 2:
+            raise ValueError(
+                "To compute the self-entropy of the NTK, the NTK matrix must"
+                f" be a tensor of rank 2, but got a tensor of rank {len(ntk.shape)}."
+            )
+        # Assert that the labels are one-hot encoded
+        if len(targets.shape) != 2:
+            raise ValueError(
+                "To compute the alignment of the labels with the NTK, the labels must"
+                " be a one-hot encoded tensor of rank 2, but got a tensor of rank "
+                f"{len(targets.shape)}."
+            )
+        label_matrix = compute_vector_outer_product(targets)
+        flat_label_matrix, shape = flatten_rank_4_tensor(label_matrix)
+        return compute_matrix_alignment(ntk, flat_label_matrix)
+
+
+class NTKEigenvectorAlignment(BaseMeasurement):
+    """
+    Measurement class to record the alignment of the eigenvectors of the NTK.
+
+    TODO: Add larger memory size to store and evaluate the alignment of the eigenvectors
+    over more than one step.
+
+    Neural State Keys
+    -----------------
+    ntk : np.ndarray
+            The Neural Tangent Kernel (NTK) matrix.
+    """
+
+    def __init__(
+        self,
+        name: str = "ntk_eigenvector_alignment",
+        rank: int = 1,
+    ):
+        """
+        Constructor method of the NTKEigenvectorAlignment class.
+
+        Parameters
+        ----------
+        name : str (default="ntk_eigenvector_alignment")
+                The name of the measurement, defining how the instance in the database
+                will be identified.
+        rank : int (default=0)
+                The rank of the measurement, defining the tensor order of the
+                measurement.
+        memory_size : int (default=1)
+                The number of eigenvectors to store in memory for alignment computation.
+        """
+        super().__init__(name, rank)
+        self.previous_eigenvectors = None
+
+    def apply(self, ntk: np.ndarray) -> np.ndarray:
+        """
+        Method to record the alignment of the eigenvectors of the NTK.
+
+        Parameters need to be provided as keyword arguments.
+
+        Parameters
+        ----------
+        ntk : np.ndarray
+                The Neural Tangent Kernel (NTK) matrix.
+
+        Returns
+        -------
+        np.ndarray
+            The alignment of the eigenvectors of the NTK.
+        """
+        # Assert that the NTK is a square matrix
+        if ntk.shape[0] != ntk.shape[1]:
+            raise ValueError(
+                "To compute the alignment of the eigenvectors of the NTK, the NTK "
+                "matrix must be a square matrix, but got a matrix of shape {ntk.shape}."
+            )
+        if len(ntk.shape) != 2:
+            raise ValueError(
+                "To compute the alignment of the eigenvectors of the NTK, the NTK "
+                "matrix must be a tensor of rank 2, but got a tensor of rank "
+                f"{len(ntk.shape)}."
+            )
+        if self.previous_eigenvectors is None:
+            self.previous_eigenvectors = compute_hermitian_eigensystem(ntk)[1]
+            return 0
+        eigenvectors = compute_hermitian_eigensystem(ntk)[1]
+        alignment = compute_matrix_alignment(eigenvectors, self.previous_eigenvectors)
+        self.previous_eigenvectors = eigenvectors
+        return alignment

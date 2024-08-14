@@ -30,6 +30,8 @@ from papyrus.utils.matrix_utils import (
     compute_gramian_diagonal_distribution,
     compute_hermitian_eigensystem,
     compute_l_pq_norm,
+    compute_matrix_alignment,
+    compute_vector_outer_product,
     flatten_rank_4_tensor,
     normalize_gram_matrix,
     unflatten_rank_4_tensor,
@@ -45,4 +47,6 @@ __all__ = [
     compute_trace.__name__,
     compute_shannon_entropy.__name__,
     compute_von_neumann_entropy.__name__,
+    compute_vector_outer_product.__name__,
+    compute_matrix_alignment.__name__,
 ]

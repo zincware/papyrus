@@ -22,12 +22,19 @@ Summary
 """
 
 import numpy as np
-from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_raises
+from numpy.testing import (
+    assert_almost_equal,
+    assert_array_almost_equal,
+    assert_array_equal,
+    assert_raises,
+)
 
 from papyrus.utils import (
     compute_gramian_diagonal_distribution,
     compute_hermitian_eigensystem,
     compute_l_pq_norm,
+    compute_matrix_alignment,
+    compute_vector_outer_product,
     flatten_rank_4_tensor,
     normalize_gram_matrix,
     unflatten_rank_4_tensor,
@@ -179,6 +186,47 @@ class TestMatrixUtils:
         # Compute the numpy implementation
         norm_numpy = np.linalg.norm(matrix, ord="fro")
         assert_array_almost_equal(norm, norm_numpy)
+
+    def test_compute_vector_outer_product(self):
+        """
+        Test the computation of the outer product of a vector.
+
+        The test is done in the following steps:
+            - Test for a 1D vector
+            - Test for a 2D vector
+        """
+        # 1D vector
+        vector = np.arange(3)
+        outer_product = compute_vector_outer_product(vector)
+        outer_product_truth = np.array([[0, 0, 0], [0, 1, 2], [0, 2, 4]])
+        assert_array_equal(outer_product, outer_product_truth)
+
+        # 2D vector
+        vector = np.array([[0, 1], [1, 0]])
+        outer_product = compute_vector_outer_product(vector)
+        outer_product_truth = np.array(
+            [[[[0, 0], [0, 1]], [[0, 0], [1, 0]]], [[[0, 1], [0, 0]], [[1, 0], [0, 0]]]]
+        )
+        assert outer_product.shape == (2, 2, 2, 2)
+        assert_array_equal(outer_product, outer_product_truth)
+
+    def test_compute_matrix_alignment(self):
+        """
+        Test the computation of the matrix alignment.
+        """
+        # Create two random matrices
+        A = np.array([[1, 0], [0, 1]])
+        B = np.array([[0, 1], [1, 0]])
+
+        A @ B
+        assert compute_matrix_alignment(A, B) == 0
+        assert_almost_equal(compute_matrix_alignment(A, A), 1)
+        assert_almost_equal(compute_matrix_alignment(B, B), 1)
+        assert_almost_equal(compute_matrix_alignment(A, -A), -1)
+        assert_almost_equal(compute_matrix_alignment(A, 0.5 * A), 1)
+        assert_almost_equal(
+            compute_matrix_alignment(A, 0.5 * A + 0.5 * B), np.sqrt(0.5)
+        )
 
     def test_flatten_rank_4_tensor(self):
         """

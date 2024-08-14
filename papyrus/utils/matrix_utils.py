@@ -154,7 +154,81 @@ def compute_l_pq_norm(matrix: np.ndarray, p: int = 2, q: int = 2):
     return np.power(outer_sum, 1 / q)
 
 
-def flatten_rank_4_tensor(tensor: np.ndarray) -> np.ndarray:
+def compute_vector_outer_product(vector: np.ndarray) -> np.ndarray:
+    """
+    Compute the outer product of a vector.
+
+    The outer product is computed as the product of the vector with its transpose.
+    Note: Providing a vector of rank 2 will result in an outer product of rank 4.
+    Example:
+    vector = np.array([ [0, 1], [1, 0] ])
+    outer_product = np.array([[
+        [[0, 0],
+         [0, 1]],
+
+        [[0, 0],
+         [1, 0]]],
+
+       [[[0, 1],
+         [0, 0]],
+
+        [[1, 0],
+         [0, 0]]
+    ]])
+
+    Parameters
+    ----------
+    vector : np.ndarray
+            Vector to compute the outer product of. Must be of rank 1 or 2.
+
+    Returns
+    -------
+    outer_product : np.ndarray
+            Outer product of the vector.
+    """
+    shape = vector.shape
+    product = np.outer(vector, vector)
+    if len(shape) == 2:
+        return unflatten_rank_4_tensor(
+            product, (shape[0], shape[0], shape[1], shape[1])
+        )
+    elif len(shape) == 1:
+        return product
+    else:
+        raise ValueError(
+            "The input to compute the outer product is not of rank 1 or 2. "
+            f"Expected rank 1 or 2 but got {len(shape)}."
+        )
+
+
+def compute_matrix_alignment(matrix_1: np.ndarray, matrix_2: np.ndarray) -> float:
+    """
+    Compute the alignment between two matrices.
+
+    The alignment is computed as the cosine similarity between the flattened
+    matrices. This is equivalent to the cosine similarity between the vectors
+    obtained by flattening the matrices.
+
+    Parameters
+    ----------
+    matrix_1 : np.ndarray
+            First matrix to compute the alignment of.
+    matrix_2 : np.ndarray
+            Second matrix to compute the alignment of.
+
+    Returns
+    -------
+    alignment : float
+            Alignment between the two matrices.
+    """
+    dot_product = np.sum(matrix_1 * matrix_2)
+    norm_1 = np.linalg.norm(matrix_1)
+    norm_2 = np.linalg.norm(matrix_2)
+    alignment = dot_product / (norm_1 * norm_2)
+    return alignment
+
+
+def flatten_rank_4_tensor(tensor: np.ndarray) -> tuple:
     """
     Flatten a rank 4 tensor to a rank 2 tensor using a specific reshaping.
 
