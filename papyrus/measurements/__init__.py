@@ -25,9 +25,11 @@ from papyrus.measurements.base_measurement import BaseMeasurement
 from papyrus.measurements.measurements import (
     NTK,
     Accuracy,
+    LabelNTKAlignment,
     Loss,
     LossDerivative,
     NTKEigenvalues,
+    NTKEigenvectorAlignment,
     NTKEntropy,
     NTKMagnitudeDistribution,
     NTKSelfEntropy,
@@ -45,4 +47,6 @@ __all__ = [
     Accuracy.__name__,
     NTK.__name__,
     LossDerivative.__name__,
+    LabelNTKAlignment.__name__,
+    NTKEigenvectorAlignment.__name__,
 ]
