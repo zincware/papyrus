@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Nikolaou"
+  given-names: "Konstantin"
+  orcid: "https://orcid.org/0009-0000-9926-680X"
+- family-names: "Tovey"
+  given-names: "Samuel"
+  orcid: "https://orcid.org/0000-0001-9537-8361"
+title: "papyrus"
+version: 0.0.1
+url: "https://github.com/zincware/papyrus"
